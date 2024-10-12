@@ -20,11 +20,6 @@ import { moneyVO, t } from "utils";
 
 import { PageHeader } from "shared/Layout";
 
-import {
-  AddToCartButton,
-  ProductAddedDialog,
-} from "modules/carts/presentation";
-
 import { IProduct } from "../types";
 import { StarRating } from "./StarRating";
 import { useCategoryLabel } from "./useCategoryLabel";
@@ -45,7 +40,6 @@ const ProductDetails = ({ product, onBack }: IProps) => {
       columns={{ base: 1, lg: 2 }}
       gap={{ base: 6, md: 8 }}
     >
-      <ProductAddedDialog />
       <GridItem colSpan={1}>
         <Box overflow="hidden" rounded="xl">
           <Box
@@ -87,7 +81,6 @@ const ProductDetails = ({ product, onBack }: IProps) => {
             {product.description}
           </Text>
           <VStack w="100%">
-            <AddToCartButton productId={product.id} colorScheme="orange" />
             <Button w="100%" variant="outline" onClick={onBack}>
               {t("Back to products' list")}
             </Button>

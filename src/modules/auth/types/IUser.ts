@@ -1,23 +1,21 @@
 export interface IUser {
   id: number;
+  whatsapp_number: number;
+  name: string;
   email: string;
-  username: string;
-  name: {
-    firstname: string;
-    lastname: string;
-  };
-  phone: string;
-  address: IAddress;
-  cartId: number;
+  email_verified_at: string | null;
+  rg: string;
+  cpf: string;
+  created_at: string;
+  updated_at: string;
 }
 
-interface IAddress {
-  city: string;
-  street: string;
-  number: number;
-  zipcode: string;
-  geolocation: {
-    lat: string;
-    long: string;
-  };
+export interface IUserResponse {
+  message: string;
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  }
 }

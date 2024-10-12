@@ -8,16 +8,16 @@ export const useSignInNotifications = () => {
   const success = () =>
     toast({
       status: "success",
-      title: t("Sign in"),
-      description: t("Logged in successfully."),
+      title: t("Entrar"),
+      description: t("Entrou com sucesso."),
     });
 
   const failure = () =>
     toast({
       status: "error",
-      title: t("Sign in"),
+      title: t("Entrar"),
       description: t(
-        "Something went wrong while signing in. Pleas try again or contact us."
+        "Não foi possível entrar. Por favor tente novamente ou entre em contato."
       ),
     });
 

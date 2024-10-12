@@ -6,10 +6,14 @@ import { getUser, loginUser } from "../infrastructure";
 import { ICredentials } from "../infrastructure/loginUser";
 import { IUser } from "../types";
 
-const AUTH_KEY = "fake_store_is_authenticated";
+const TOKEN = "token";
+const USER = "user";
 
 // could be also https://www.npmjs.com/package/zustand-persist lib for advanced use cases
-const isLoggedIn = () => localStorage.getItem(AUTH_KEY) === "true";
+const isLoggedIn = () => !!localStorage.getItem(TOKEN);
+const getUserId = () => localStorage.getItem(USER)
+    ? (JSON.parse(localStorage.getItem(USER)!) as IUser).id
+    : null;
 
 interface IStore {
   isAuthenticated: boolean;
@@ -38,8 +42,11 @@ export const initializeAuthStore = (preloadedState: Partial<IStore> = {}) => {
   return createStore<IStore>((set) => {
     if (isLoggedIn()) {
       set({ state: "loading" });
+      const id = getUserId();
 
-      getUser()
+      if (!id) throw new Error();
+
+      getUser(id)
         .then((user) => {
           set({
             user,
@@ -67,10 +74,11 @@ export const initializeAuthStore = (preloadedState: Partial<IStore> = {}) => {
         set({ state: "loading" });
 
         try {
-          await loginUser(credentials);
-          const user = await getUser();
+          const userResponse = await loginUser(credentials);
+          const user = await getUser(userResponse.user.id);
 
-          localStorage.setItem(AUTH_KEY, "true");
+          localStorage.setItem(TOKEN, userResponse.token);
+          localStorage.setItem(USER, JSON.stringify(user))
 
           set({
             isAuthenticated: true,
@@ -78,7 +86,7 @@ export const initializeAuthStore = (preloadedState: Partial<IStore> = {}) => {
             user,
           });
         } catch (e) {
-          localStorage.setItem(AUTH_KEY, "false");
+          localStorage.clear();
 
           set({
             isAuthenticated: false,
@@ -95,7 +103,7 @@ export const initializeAuthStore = (preloadedState: Partial<IStore> = {}) => {
         });
 
         return new Promise((resolve) => setTimeout(resolve, 500)).then(() => {
-          localStorage.setItem(AUTH_KEY, "false");
+          localStorage.clear();
           set({
             isAuthenticated: false,
             state: "finished",

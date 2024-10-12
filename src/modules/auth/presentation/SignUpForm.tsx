@@ -20,16 +20,14 @@ import { TextInput } from "shared/Form";
 import { useAuthStore } from "../application";
 import { useSignInNotifications } from "./useSignInNotifications";
 
-interface IProps {
-  initialEmail?: string;
-  initialPassword?: string;
-}
-
-export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
+export const SignUpForm = () => {
   const secondaryColor = useSecondaryTextColor();
 
-  const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState(initialPassword);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [markAllTouched, setMarkallTouched] = useState(false);
 
   const [notifySuccess, notifyFailure] = useSignInNotifications();
   const login = useAuthStore((store) => store.login);
@@ -38,11 +36,11 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
     <VStack align="stretch" spacing={8} w="100%" maxW="lg">
       <VStack textAlign="center">
         <Heading fontSize={{ base: "2xl", md: "4xl" }}>
-          {t("Entre na sua conta")}
+          {t("Crie sua conta")}
         </Heading>
         <Text fontSize={{ base: "md", md: "lg" }} color={secondaryColor}>
-          {t("não tem uma conta? {link}", {
-            link: <Link href="/registrar" color={"blue.400"}>{t("registre-se")}</Link>,
+          {t("já tem uma conta? {link}", {
+            link: <Link href="/entrar" color={"blue.400"}>{t("entrar")}</Link>,
           })}
         </Text>
       </VStack>
@@ -58,7 +56,7 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
           onSubmit={(e) => {
             e.preventDefault();
 
-            if (!email || !password) {
+            if (!email || !password || !username) {
               return;
             }
 
@@ -68,8 +66,17 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
           }}
         >
           <TextInput
+            id="username"
+            value={username}
+            markAllTouched={markAllTouched}
+            onChange={(e) => setUsername(e.currentTarget.value)}
+          >
+            {t("Nome completo")}
+          </TextInput>
+          <TextInput
             id="email"
             type="email"
+            markAllTouched={markAllTouched}
             value={email}
             onChange={(e) => setEmail(e.currentTarget.value)}
           >
@@ -78,23 +85,24 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
           <TextInput
             id="password"
             type="password"
+            markAllTouched={markAllTouched}
             value={password}
             onChange={(e) => setPassword(e.currentTarget.value)}
           >
             {t("Senha")}
           </TextInput>
+          <TextInput
+            id="confirmPassword"
+            type="password"
+            markAllTouched={markAllTouched}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.currentTarget.value)}
+          >
+            {t("Confirme a senha")}
+          </TextInput>
           <VStack w="100%" spacing={10}>
-            <Stack
-              w="100%"
-              direction={{ base: "column", sm: "row" }}
-              align="start"
-              justify="space-between"
-            >
-              <Checkbox>{t("Lembrar")}</Checkbox>
-              <Link color="blue.400">{t("Esqueceu a senha?")}</Link>
-            </Stack>
-            <Button type="submit" colorScheme="blue" w="100%">
-              {t("Entrar")}
+            <Button onClick={() => setMarkallTouched(true)} type="submit" colorScheme="blue" w="100%">
+              {t("Registrar")}
             </Button>
           </VStack>
         </VStack>

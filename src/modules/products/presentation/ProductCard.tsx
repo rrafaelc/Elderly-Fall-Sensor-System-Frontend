@@ -5,8 +5,6 @@ import { moneyVO } from "utils";
 
 import { useNavigate } from "shared/Router";
 
-import { AddToCartButton } from "modules/carts/presentation";
-
 import { Category } from "../types";
 import { useCategoryLabel } from "./useCategoryLabel";
 
@@ -61,7 +59,6 @@ const ProductCard = ({ title, category, price, imageUrl, id }: IProps) => {
           {categoryLabel}
         </Text>
       </VStack>
-      <AddToCartButton productId={id} />
     </VStack>
   );
 };

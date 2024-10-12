@@ -10,7 +10,6 @@ export enum LogEnvironment {
   Dev = "dev",
   Prod = "prod",
   Test = "test",
-  Storybook = "storybook",
 }
 
 export type LogParams = {

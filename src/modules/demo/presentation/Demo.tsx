@@ -33,13 +33,6 @@ const Demo = () => {
             currencyNumber: moneyVO.format(23753382.63, "USD"),
             date: dateVO.formatDateTime(new Date(2023, 1, 17, 12, 44, 0)),
           })}
-        </Text>{" "}
-        <Text fontWeight="400">
-          {t("Storybook conference: {date}", {
-            date: dateVO.formatRelativeTime(
-              dateVO.given(new Date(2023, 1, 17, 12, 44, 0))
-            ),
-          })}
         </Text>
       </VStack>
     </Center>

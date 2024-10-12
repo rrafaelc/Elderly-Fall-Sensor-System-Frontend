@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import {
   FormControl,
@@ -14,17 +14,18 @@ interface IProps extends InputProps {
   id: string;
   children: string | ReactNode;
   isRequired?: boolean;
+  markAllTouched?: boolean;
 }
 
-const TextInput = ({ id, children, isRequired = true, ...props }: IProps) => {
-  const isInvalid = props.value === "";
+const TextInput = ({ id, children, isRequired = true, markAllTouched, ...props }: IProps) => {
+  const isInvalid = props.value === "" && markAllTouched;
 
   return (
     <FormControl id={id} isRequired={isRequired} isInvalid={isInvalid}>
       <FormLabel>{children}</FormLabel>
       <Input {...props} />
       {isInvalid && (
-        <FormErrorMessage>{t("Field is required.")}</FormErrorMessage>
+        <FormErrorMessage>{t("Campo obrigatório.")}</FormErrorMessage>
       )}
     </FormControl>
   );

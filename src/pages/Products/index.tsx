@@ -12,7 +12,6 @@ import { ErrorPageStrategy } from "shared/Result";
 import { useNotImplementedYetToast } from "shared/Toast";
 
 import { useProductsQuery } from "modules/products/infrastructure";
-import { ProductsList } from "modules/products/presentation";
 
 const defaultParams: IQueryParams = { limit: 10, sort: "asc" };
 
@@ -36,7 +35,6 @@ const ProductsPage = () => {
           {t("More filters")}
         </Button>
       </PageHeader>
-      <ProductsList products={data.products} />
       {data.products.length > 0 && (
         <Button
           w="100%"

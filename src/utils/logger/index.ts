@@ -1,6 +1,5 @@
 import { ConsoleLogger } from "./ConsoleLogger";
 import { ILogger, LogEnvironment } from "./ILogger";
-import { StorybookLogger } from "./StorybookLogger";
 
 // todo: HttpLogger
 // todo: MockLogger
@@ -13,7 +12,6 @@ const loggers = {
       : ConsoleLogger,
   [LogEnvironment.Prod]: HttpLogger,
   [LogEnvironment.Test]: ConsoleLogger,
-  [LogEnvironment.Storybook]: StorybookLogger,
 };
 
 export class Logger {
@@ -52,11 +50,6 @@ export class Logger {
       if (import.meta.env.TEST) {
         console.info("Mock logger was initiated");
         return (this._client = new loggers[LogEnvironment.Test]());
-      }
-
-      if (import.meta.env.STORYBOOK === "true") {
-        console.info("Storybook logger was initiated");
-        return (this._client = new loggers[LogEnvironment.Storybook]());
       }
 
       if (import.meta.env.DEV) {

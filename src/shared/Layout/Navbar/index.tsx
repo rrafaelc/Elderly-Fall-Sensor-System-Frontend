@@ -14,6 +14,7 @@ import {
 
 import { Link, useNavigate } from "shared/Router";
 import { useNotImplementedYetToast } from "shared/Toast";
+import { Image } from "@chakra-ui/react";
 
 import { useAuthStore } from "modules/auth/application";
 
@@ -59,9 +60,20 @@ export const Navbar = () => {
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             fontWeight="extrabold"
           >
-            Logo
+            <Flex alignItems="center" gap="2" display={{ base: "left", md: "flex" }}>
+              <Image
+                boxSize="50px"
+                objectFit="cover"
+                src="/images/Logo.png"
+                alt="Passos Seguros"
+              />
+              <Flex direction="column" align="center" display={{ base: "none", md: "flex" }}>
+                <Text fontSize={12} >Passos</Text>
+                <Text fontSize={12} >Seguros</Text>
+              </Flex>
+            </Flex>
           </Text>
-          <Flex display={{ base: "none", md: "flex" }} ml={10}>
+          <Flex display={{ base: "none", md: "flex" }} alignItems="center" ml={10}>
             <DesktopNav />
           </Flex>
         </Flex>
@@ -88,14 +100,14 @@ const SignInButton = () => {
   }
 
   return (
-    <Button fontWeight={400} variant="link" as={Link} to="/sign-in">
-      Sign In
+    <Button fontWeight={400} variant="link" as={Link} to="/entrar">
+      Entrar
     </Button>
   );
 };
 
 const SignUpButton = () => {
-  const notImplemented = useNotImplementedYetToast();
+  const navigate = useNavigate();
   const isAuthenticated = useAuthStore((store) => store.isAuthenticated);
 
   if (isAuthenticated) {
@@ -106,9 +118,9 @@ const SignUpButton = () => {
     <Button
       display={{ base: "none", md: "inline-flex" }}
       colorScheme="orange"
-      onClick={notImplemented}
+      onClick={() => navigate("/registrar")}
     >
-      Sign Up
+      Registre-se
     </Button>
   );
 };
@@ -129,7 +141,7 @@ const LogoutButton = () => {
       variant="link"
       onClick={() => logout().then(() => navigate("/"))}
     >
-      Logout
+      Sair
     </Button>
   );
 };
