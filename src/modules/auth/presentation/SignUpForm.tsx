@@ -10,6 +10,7 @@ import {
   Text,
   useColorModeValue,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { useSecondaryTextColor } from "theme";
 
@@ -22,12 +23,17 @@ import { useSignInNotifications } from "./useSignInNotifications";
 
 export const SignUpForm = () => {
   const secondaryColor = useSecondaryTextColor();
+  const toast = useToast();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [markAllTouched, setMarkallTouched] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [notifySuccess, notifyFailure] = useSignInNotifications();
   const login = useAuthStore((store) => store.login);
@@ -56,7 +62,16 @@ export const SignUpForm = () => {
           onSubmit={(e) => {
             e.preventDefault();
 
-            if (!email || !password || !username) {
+            if (!username || !email || !password || !confirmPassword) {
+              return;
+            }
+
+            if (password !== confirmPassword) {
+              toast({
+                status: "error",
+                title: t("Senhas não coincidem"),
+                description: t("Confirme a senha exatamente igual a senha."),
+              })
               return;
             }
 
@@ -69,6 +84,7 @@ export const SignUpForm = () => {
             id="username"
             value={username}
             markAllTouched={markAllTouched}
+            placeholder="Digite seu nome completo"
             onChange={(e) => setUsername(e.currentTarget.value)}
           >
             {t("Nome completo")}
@@ -78,24 +94,42 @@ export const SignUpForm = () => {
             type="email"
             markAllTouched={markAllTouched}
             value={email}
+            placeholder="Digite seu email"
             onChange={(e) => setEmail(e.currentTarget.value)}
           >
             {t("E-mail")}
           </TextInput>
           <TextInput
+            id="whatsapp"
+            value={whatsapp}
+            markAllTouched={markAllTouched}
+            placeholder="Digite seu número do WhatsApp"
+            onChange={(e) => setWhatsapp(e.currentTarget.value)}
+          >
+            {t("WhatsApp")}
+          </TextInput>
+          <TextInput
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             markAllTouched={markAllTouched}
             value={password}
+            placeholder="Crie uma senha"
+            isPasswordInput={true}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
             onChange={(e) => setPassword(e.currentTarget.value)}
           >
             {t("Senha")}
           </TextInput>
           <TextInput
             id="confirmPassword"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             markAllTouched={markAllTouched}
             value={confirmPassword}
+            placeholder="Digite sua senha novamente"
+            isPasswordInput={true}
+            showPassword={showConfirmPassword}
+            setShowPassword={setShowConfirmPassword}
             onChange={(e) => setConfirmPassword(e.currentTarget.value)}
           >
             {t("Confirme a senha")}

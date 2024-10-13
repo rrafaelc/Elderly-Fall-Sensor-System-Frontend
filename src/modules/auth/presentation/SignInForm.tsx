@@ -20,16 +20,13 @@ import { TextInput } from "shared/Form";
 import { useAuthStore } from "../application";
 import { useSignInNotifications } from "./useSignInNotifications";
 
-interface IProps {
-  initialEmail?: string;
-  initialPassword?: string;
-}
-
-export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
+export const SignInForm = () => {
   const secondaryColor = useSecondaryTextColor();
 
-  const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState(initialPassword);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [markAllTouched, setMarkallTouched] = useState(false);
 
   const [notifySuccess, notifyFailure] = useSignInNotifications();
   const login = useAuthStore((store) => store.login);
@@ -42,7 +39,11 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
         </Heading>
         <Text fontSize={{ base: "md", md: "lg" }} color={secondaryColor}>
           {t("não tem uma conta? {link}", {
-            link: <Link href="/registrar" color={"blue.400"}>{t("registre-se")}</Link>,
+            link: (
+              <Link href="/registrar" color={"blue.400"}>
+                {t("registre-se")}
+              </Link>
+            ),
           })}
         </Text>
       </VStack>
@@ -71,18 +72,26 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
             id="email"
             type="email"
             value={email}
+            markAllTouched={markAllTouched}
+            placeholder="Digite seu email"
             onChange={(e) => setEmail(e.currentTarget.value)}
           >
             {t("E-mail")}
           </TextInput>
           <TextInput
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
+            markAllTouched={markAllTouched}
+            isPasswordInput={true}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+            placeholder="Digite sua senha"
             onChange={(e) => setPassword(e.currentTarget.value)}
           >
             {t("Senha")}
           </TextInput>
+
           <VStack w="100%" spacing={10}>
             <Stack
               w="100%"
@@ -93,7 +102,12 @@ export const SignInForm = ({ initialEmail, initialPassword }: IProps) => {
               <Checkbox>{t("Lembrar")}</Checkbox>
               <Link color="blue.400">{t("Esqueceu a senha?")}</Link>
             </Stack>
-            <Button type="submit" colorScheme="blue" w="100%">
+            <Button
+              onClick={() => setMarkallTouched(true)}
+              type="submit"
+              colorScheme="blue"
+              w="100%"
+            >
               {t("Entrar")}
             </Button>
           </VStack>
