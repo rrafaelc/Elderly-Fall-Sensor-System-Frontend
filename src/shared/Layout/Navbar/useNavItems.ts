@@ -5,7 +5,6 @@ import { INavItem } from "./INavItem";
 export const useNavItems = () => {
   const isAuthenticated = useAuthStore((store) => store.isAuthenticated);
 
-  // return isAuthenticated ? NAV_ITEMS : NAV_ITEMS.slice(0, NAV_ITEMS.length - 1);
   return isAuthenticated ? NAV_ITEMS_AUTHENTICATED : NAV_ITEMS_NOT_AUTHENTICATED;
 };
 
@@ -66,7 +65,7 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
   {
     label: "Suporte",
     href: "/suporte",
-  },  
+  },
 ];
 
 export const NAV_ITEMS_NOT_AUTHENTICATED: Array<INavItem> = [
@@ -87,49 +86,3 @@ export const NAV_ITEMS_NOT_AUTHENTICATED: Array<INavItem> = [
     href: "/sobre",
   },
 ];
-
-// export const NAV_ITEMS_NOT_AUTHENTICATED: Array<INavItem> = [
-//   {
-//     label: "Inspiration",
-//     children: [
-//       {
-//         label: "Explore Choc UI",
-//         subLabel: "Set of prebuilt components",
-//         href: "https://choc-ui.com/",
-//       },
-//       {
-//         label: "Explore Chakra UI Templates",
-//         subLabel: "Set of opensource prebuilt components",
-//         href: "https://chakra-templates.dev/",
-//       },
-//       {
-//         label: "Tailwind UI",
-//         subLabel: "Prebuilt e-commerce components",
-//         href: "https://tailwindui.com/components#product-ecommerce",
-//       },
-//     ],
-//   },
-//   {
-//     label: "Demo Providers",
-//     children: [
-//       {
-//         label: "Vite.js",
-//         subLabel: "Next generation Frontend Tooling",
-//         href: "https://vitejs.dev/",
-//       },
-//       {
-//         label: "Fake Store API",
-//         subLabel: "Free rest API for e-commerce",
-//         href: "https://fakestoreapi.com/",
-//       },
-//     ],
-//   },
-//   {
-//     label: "Our Products",
-//     href: "/products",
-//   },
-//   {
-//     label: "Cart",
-//     href: "/cart/1",
-//   },
-// ];

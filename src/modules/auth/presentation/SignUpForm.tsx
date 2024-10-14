@@ -2,8 +2,6 @@ import { useState } from "react";
 
 import {
   Box,
-  Checkbox,
-  Stack,
   Link,
   Button,
   Heading,
@@ -16,10 +14,11 @@ import { useSecondaryTextColor } from "theme";
 
 import { t } from "utils";
 
-import { TextInput } from "shared/Form";
+import { PhoneInput, TextInput } from "shared/Form";
 
 import { useAuthStore } from "../application";
-import { useSignInNotifications } from "./useSignInNotifications";
+import { useSignUpNotifications } from "./useSignUpNotifications";
+import { useNavigate } from "shared/Router";
 
 export const SignUpForm = () => {
   const secondaryColor = useSecondaryTextColor();
@@ -35,8 +34,9 @@ export const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [notifySuccess, notifyFailure] = useSignInNotifications();
-  const login = useAuthStore((store) => store.login);
+  const [notifySuccess, notifyFailure] = useSignUpNotifications();
+  const register = useAuthStore((store) => store.register);
+  const navigate = useNavigate();
 
   return (
     <VStack align="stretch" spacing={8} w="100%" maxW="lg">
@@ -46,7 +46,11 @@ export const SignUpForm = () => {
         </Heading>
         <Text fontSize={{ base: "md", md: "lg" }} color={secondaryColor}>
           {t("já tem uma conta? {link}", {
-            link: <Link href="/entrar" color={"blue.400"}>{t("entrar")}</Link>,
+            link: (
+              <Link href="/entrar" color={"blue.400"}>
+                {t("entrar")}
+              </Link>
+            ),
           })}
         </Text>
       </VStack>
@@ -62,7 +66,13 @@ export const SignUpForm = () => {
           onSubmit={(e) => {
             e.preventDefault();
 
-            if (!username || !email || !password || !confirmPassword) {
+            if (
+              !username ||
+              !email ||
+              !password ||
+              !confirmPassword ||
+              !whatsapp
+            ) {
               return;
             }
 
@@ -71,12 +81,35 @@ export const SignUpForm = () => {
                 status: "error",
                 title: t("Senhas não coincidem"),
                 description: t("Confirme a senha exatamente igual a senha."),
-              })
+              });
               return;
             }
 
-            login({ email, password })
-              .then(() => notifySuccess())
+            const onlyNumbers = whatsapp.replace(/\D/g, "");
+
+            if (onlyNumbers.length < 11) {
+              toast({
+                status: "error",
+                title: t("Número Whatsapp incorreto"),
+                description: t("Digite corretamente os 11 dígitos do seu número de celular incluindo o DDD."),
+              });
+
+              if (!onlyNumbers.length) {
+                setWhatsapp("")
+              }
+              return;
+            }
+
+            register({
+              name: username,
+              email,
+              password,
+              whatsapp_number: parseInt(onlyNumbers),
+            })
+              .then(() => {
+                notifySuccess();
+                navigate("/entrar");
+              })
               .catch(() => notifyFailure());
           }}
         >
@@ -99,7 +132,7 @@ export const SignUpForm = () => {
           >
             {t("E-mail")}
           </TextInput>
-          <TextInput
+          <PhoneInput
             id="whatsapp"
             value={whatsapp}
             markAllTouched={markAllTouched}
@@ -107,7 +140,7 @@ export const SignUpForm = () => {
             onChange={(e) => setWhatsapp(e.currentTarget.value)}
           >
             {t("WhatsApp")}
-          </TextInput>
+          </PhoneInput>
           <TextInput
             id="password"
             type={showPassword ? "text" : "password"}
@@ -135,7 +168,12 @@ export const SignUpForm = () => {
             {t("Confirme a senha")}
           </TextInput>
           <VStack w="100%" spacing={10}>
-            <Button onClick={() => setMarkallTouched(true)} type="submit" colorScheme="blue" w="100%">
+            <Button
+              onClick={() => setMarkallTouched(true)}
+              type="submit"
+              colorScheme="blue"
+              w="100%"
+            >
               {t("Registrar")}
             </Button>
           </VStack>

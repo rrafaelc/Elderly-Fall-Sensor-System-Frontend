@@ -4,7 +4,6 @@ import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
 
 import { SignUpForm } from "modules/auth/presentation";
-import { withRequirePub } from "modules/auth/application";
 
 export const SignUpPage = () => {
   return (
@@ -16,6 +15,6 @@ export const SignUpPage = () => {
   );
 };
 
-export const Component = withRequirePub(SignUpPage, { to: "/" });
+export const Component = SignUpPage;
 
 export const ErrorBoundary = ErrorPageStrategy;

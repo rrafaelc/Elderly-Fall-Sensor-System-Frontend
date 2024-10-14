@@ -2,9 +2,10 @@ import { createContext, useContext } from "react";
 
 import { createStore, useStore } from "zustand";
 
-import { getUser, loginUser } from "../infrastructure";
+import { getUser, loginUser, registerUser } from "../infrastructure";
 import { ICredentials } from "../infrastructure/loginUser";
 import { IUser } from "../types";
+import { IRegisterUserProps } from "../infrastructure/registerUser";
 
 const TOKEN = "token";
 const USER = "user";
@@ -21,6 +22,7 @@ interface IStore {
   state: "idle" | "loading" | "finished";
   user: IUser;
   login: (credentials: ICredentials) => Promise<void>;
+  register: (body: IRegisterUserProps) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -86,7 +88,35 @@ export const initializeAuthStore = (preloadedState: Partial<IStore> = {}) => {
             user,
           });
         } catch (e) {
-          localStorage.clear();
+          localStorage.removeItem(TOKEN);
+          localStorage.removeItem(USER);
+
+          set({
+            isAuthenticated: false,
+            state: "finished",
+            user: undefined,
+          });
+
+          throw e;
+        }
+      },
+      register: async (body: IRegisterUserProps) => {
+        set({ state: "loading" });
+
+        try {
+          await registerUser(body);
+
+          localStorage.removeItem(TOKEN);
+          localStorage.removeItem(USER);
+
+          set({
+            isAuthenticated: false,
+            state: "finished",
+            user: undefined,
+          });
+        } catch (e) {
+          localStorage.removeItem(TOKEN);
+          localStorage.removeItem(USER);
 
           set({
             isAuthenticated: false,
@@ -103,7 +133,8 @@ export const initializeAuthStore = (preloadedState: Partial<IStore> = {}) => {
         });
 
         return new Promise((resolve) => setTimeout(resolve, 500)).then(() => {
-          localStorage.clear();
+          localStorage.removeItem(TOKEN);
+          localStorage.removeItem(USER);
           set({
             isAuthenticated: false,
             state: "finished",
