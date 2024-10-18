@@ -10,7 +10,7 @@ export const useNavItems = () => {
 
 export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
   {
-    label: "Página Inicial",
+    label: "Dashboard",
     href: '/'
   },
   {
@@ -23,42 +23,42 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
       {
         label: "Emparelhar com a internet",
         subLabel: "Conecte o sensor com a internet",
-        href: "https://choc-ui.com/",
+        href: "/configuracoes/emparelhar-com-a-internet",
       },
       {
-        label: "Alarmes e notificações",
-        subLabel: "Defina alarmes e notificações",
-        href: "https://chakra-templates.dev/",
+        label: "Cadastrar idoso",
+        subLabel: "Cadastre as informações do idoso(a)",
+        href: "/configuracoes/cadastrar-idoso",
       },
       {
-        label: "Histórico de acidentes",
-        subLabel: "Veja um dashboard com o histórico de acidentes registrado pelo sensor",
-        href: "https://tailwindui.com/components#product-ecommerce",
-      },
-      {
-        label: "Gerenciamento de Contatos",
+        label: "Contato de emergência",
         subLabel: "Adicione ou remova contatos de emergência",
-        href: "https://tailwindui.com/components#product-ecommerce",
+        href: "/configuracoes/contato-de-emergencia",
       },
       {
         label: "Sensibilidade",
         subLabel: "Ajuste a sensibilidade do sensor",
-        href: "https://tailwindui.com/components#product-ecommerce",
-      }
+        href: "/configuracoes/sensibilidade",
+      },
+      {
+        label: "Dados pessoais",
+        subLabel: "Atualizar seus dados de usuário",
+        href: "/configuracoes/dados-pessoais",
+      },
     ],
   },
   {
-    label: "Dados pessoais",
+    label: "Informações",
     children: [
       {
-        label: "Vite.js",
-        subLabel: "Next generation Frontend Tooling",
-        href: "https://vitejs.dev/",
+        label: "Histórico de acidentes",
+        subLabel: "Veja um dashboard com o histórico de acidentes registrado pelo sensor",
+        href: "/informacoes/historico-de-acidentes",
       },
       {
-        label: "Fake Store API",
-        subLabel: "Free rest API for e-commerce",
-        href: "https://fakestoreapi.com/",
+        label: "Alarmes e notificações",
+        subLabel: "Defina alarmes e notificações",
+        href: "/informacoes/alarmes-e-notificacoes",
       },
     ],
   },

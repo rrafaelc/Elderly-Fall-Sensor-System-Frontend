@@ -24,8 +24,12 @@ import { LoaderBar } from "./LoaderBar";
 import { MobileNav } from "./MobileNav";
 
 export const Navbar = () => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle, onClose } = useDisclosure();
   const bg = useColorModeValue("white", "gray.800");
+
+  const handleLinkClick = () => {
+    onClose();
+  };
 
   return (
     <Box w="100%" position="fixed" zIndex="10">
@@ -74,7 +78,7 @@ export const Navbar = () => {
             </Flex>
           </Text>
           <Flex display={{ base: "none", md: "flex" }} alignItems="center" ml={10}>
-            <DesktopNav />
+            <DesktopNav handleCloseNav={handleLinkClick} />
           </Flex>
         </Flex>
         <HStack direction={"row"} spacing={4}>
@@ -86,7 +90,7 @@ export const Navbar = () => {
       </Flex>
       <LoaderBar />
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav handleCloseNav={handleLinkClick} />
       </Collapse>
     </Box>
   );

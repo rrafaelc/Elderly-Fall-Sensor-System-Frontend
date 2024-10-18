@@ -33,9 +33,9 @@ const HeroSection = ({ productNumber }: IProps) => {
           fontSize={{ base: "3xl", sm: "4xl", md: "6xl", lg: "7xl" }}
           lineHeight={"110%"}
         >
-          Make money from <br />
+          Colocar dashboard <br />
           <Text as="span" color={brandColor}>
-            your products
+            nessa página
           </Text>
         </Heading>
         <Text fontSize={{ base: "md", md: "lg", lg: "xl" }} color={textColor}>

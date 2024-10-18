@@ -18,7 +18,13 @@ import { Link, useLocation } from "shared/Router";
 import { INavItem } from "./INavItem";
 import { useNavItems } from "./useNavItems";
 
-export const DesktopNav = () => {
+interface IDesktopNav {
+  handleCloseNav: () => void
+}
+
+interface IDesktopNavItem extends INavItem, IDesktopNav {}
+
+export const DesktopNav = ({ handleCloseNav }: IDesktopNav) => {
   const { pathname } = useLocation();
   const navItems = useNavItems();
 
@@ -31,47 +37,59 @@ export const DesktopNav = () => {
       {navItems.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger="hover" placement="bottom-start">
-            <PopoverTrigger>
-              {navItem.href ? (
-                <ChLink
-                  as={Link}
-                  p={2}
-                  to={navItem.href}
-                  color={pathname === navItem.href ? brandColor : linkColor}
-                  _hover={{
-                    color: brandColor,
-                  }}
-                >
-                  {navItem.label}
-                </ChLink>
-              ) : (
-                <ChLink
-                  p={2}
-                  href={navItem.href}
-                  color={pathname === navItem.href ? brandColor : linkColor}
-                  _hover={{
-                    color: brandColor,
-                  }}
-                >
-                  {navItem.label}
-                </ChLink>
-              )}
-            </PopoverTrigger>
-            {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow={"xl"}
-                bg={popoverContentBgColor}
-                p={4}
-                rounded={"xl"}
-                minW={"sm"}
-              >
-                <Stack>
-                  {navItem.children.map((child) => (
-                    <DesktopSubNav key={child.label} {...child} />
-                  ))}
-                </Stack>
-              </PopoverContent>
+            {({ onClose }) => (
+              <>
+                <PopoverTrigger>
+                  {navItem.href ? (
+                    <ChLink
+                      as={Link}
+                      p={2}
+                      to={navItem.href}
+                      color={pathname === navItem.href ? brandColor : linkColor}
+                      onClick={!navItem.children ? handleCloseNav : () => {}}
+                      _hover={{
+                        color: brandColor,
+                      }}
+                    >
+                      {navItem.label}
+                    </ChLink>
+                  ) : (
+                    <ChLink
+                      p={2}
+                      href={navItem.href}
+                      color={pathname === navItem.href ? brandColor : linkColor}
+                      _hover={{
+                        color: brandColor,
+                      }}
+                    >
+                      {navItem.label}
+                    </ChLink>
+                  )}
+                </PopoverTrigger>
+                {navItem.children && (
+                  <PopoverContent
+                    border={0}
+                    boxShadow={"xl"}
+                    bg={popoverContentBgColor}
+                    p={4}
+                    rounded={"xl"}
+                    minW={"sm"}
+                  >
+                    <Stack>
+                      {navItem.children.map((child) => (
+                        <DesktopSubNav
+                          key={child.label}
+                          {...child}
+                          handleCloseNav={() => {
+                            handleCloseNav();
+                            onClose(); // Fecha o Popover
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  </PopoverContent>
+                )}
+              </>
             )}
           </Popover>
         </Box>
@@ -80,18 +98,18 @@ export const DesktopNav = () => {
   );
 };
 
-const DesktopSubNav = ({ label, href, subLabel }: INavItem) => {
+const DesktopSubNav = ({ label, href, subLabel, handleCloseNav }: IDesktopNavItem) => {
   const brandColor = useBrandColor();
 
   return (
     <ChLink
-      href={href}
-      target="_blank"
-      rel="noreferrer noopener"
+      as={Link}
+      to={href}
       role="group"
       display="block"
       p={2}
       rounded="md"
+      onClick={handleCloseNav}
       _hover={{ bg: useColorModeValue("orange.50", "gray.900") }}
     >
       <Stack direction="row" align="center">

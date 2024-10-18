@@ -15,7 +15,13 @@ import { Link } from "shared/Router";
 import { INavItem } from "./INavItem";
 import { useNavItems } from "./useNavItems";
 
-export const MobileNav = () => {
+interface IMobileNav {
+  handleCloseNav: () => void
+}
+
+interface IMobileNavItem extends INavItem, IMobileNav {}
+
+export const MobileNav = ({ handleCloseNav }: IMobileNav) => {
   const bg = useColorModeValue("white", "gray.800");
   const navItems = useNavItems();
 
@@ -29,14 +35,14 @@ export const MobileNav = () => {
       borderColor={useColorModeValue("gray.200", "gray.900")}
     >
       {navItems.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
+        <MobileNavItem key={navItem.label} {...navItem} handleCloseNav={handleCloseNav} />
       ))}
     </Stack>
   );
 };
 
 // todo: navigation: Link
-const MobileNavItem = ({ label, children, href }: INavItem) => {
+const MobileNavItem = ({ label, children, href, handleCloseNav }: IMobileNavItem) => {
   const { isOpen, onToggle } = useDisclosure();
 
   return (
@@ -47,6 +53,7 @@ const MobileNavItem = ({ label, children, href }: INavItem) => {
         to={href ?? ""}
         justify="space-between"
         align="center"
+        onClick={!children?.length ? handleCloseNav : () => {}}
         _hover={{
           textDecoration: "none",
         }}
@@ -78,11 +85,11 @@ const MobileNavItem = ({ label, children, href }: INavItem) => {
           {children &&
             children.map((child) => (
               <ChLink
+                as={Link}
+                to={child.href}
                 key={child.label}
                 py={2}
-                href={child.href}
-                target="_blank"
-                rel="noreferrer noopener"
+                onClick={handleCloseNav}
               >
                 {child.label}
               </ChLink>

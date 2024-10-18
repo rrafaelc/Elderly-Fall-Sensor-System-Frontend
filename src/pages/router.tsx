@@ -30,15 +30,53 @@ export const router = createBrowserRouter([
         lazy: () => import("./SignUp"),
       },
       {
-        path: "/products",
-        loader: productsPageLoader,
-        lazy: () => import("./Products"),
+        path: "/sensores",
+        lazy: () => import("./Sensores"),
       },
       {
-        path: "/products/:productId",
-        loader: productPageLoader,
-        lazy: () => import("./Product"),
-      }
+        path: "/configuracoes/emparelhar-com-a-internet",
+        lazy: () => import("./Configuracoes/EmparelharComInternet"),
+      },
+      {
+        path: "/configuracoes/cadastrar-idoso",
+        lazy: () => import("./Configuracoes/CadastrarIdoso"),
+      },
+      {
+        path: "/configuracoes/contato-de-emergencia",
+        lazy: () => import("./Configuracoes/ContatoDeEmergencia"),
+      },
+      {
+        path: "/configuracoes/sensibilidade",
+        lazy: () => import("./Configuracoes/Sensibilidade"),
+      },
+      {
+        path: "/configuracoes/dados-pessoais",
+        lazy: () => import("./Configuracoes/DadosPessoais"),
+      },
+      {
+        path: "/informacoes/historico-de-acidentes",
+        lazy: () => import("./Informacoes/HistoricoDeAcidentes"),
+      },
+      {
+        path: "/informacoes/alarmes-e-notificacoes",
+        lazy: () => import("./Informacoes/AlarmeENotificacoes"),
+      },
+      {
+        path: "/inspiracao",
+        lazy: () => import("./Inspiracao"),
+      },
+      {
+        path: "/beneficios",
+        lazy: () => import("./Beneficios"),
+      },
+      {
+        path: "/sobre",
+        lazy: () => import("./Sobre"),
+      },
+      {
+        path: "/suporte",
+        lazy: () => import("./Suporte"),
+      },
     ],
   },
 ]);
