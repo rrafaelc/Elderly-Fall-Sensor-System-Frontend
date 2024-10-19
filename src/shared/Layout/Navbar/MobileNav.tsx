@@ -41,39 +41,51 @@ export const MobileNav = ({ handleCloseNav }: IMobileNav) => {
   );
 };
 
-// todo: navigation: Link
 const MobileNavItem = ({ label, children, href, handleCloseNav }: IMobileNavItem) => {
   const { isOpen, onToggle } = useDisclosure();
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (children) {
+      onToggle();
+    }
+    if (!href) {
+      e.stopPropagation();
+      e.preventDefault();
+    } else if (!children?.length) {
+      handleCloseNav();
+    }
+  };
+
+  const Content = (
+    <Flex
+      py={2}
+      justify="space-between"
+      align="center"
+      _hover={{ textDecoration: "none" }}
+      onClick={handleClick}
+    >
+      <Text fontWeight="bold" color={useColorModeValue("gray.600", "gray.200")}>
+        {label}
+      </Text>
+      {children && (
+        <Icon
+          as={ChevronDownIcon}
+          transition="all .25s ease-in-out"
+          transform={isOpen ? "rotate(180deg)" : ""}
+          w={6}
+          h={6}
+        />
+      )}
+    </Flex>
+  );
+
   return (
-    <Stack spacing={4} onClick={children && onToggle}>
-      <Flex
-        py={2}
-        as={Link}
-        to={href ?? ""}
-        justify="space-between"
-        align="center"
-        onClick={!children?.length ? handleCloseNav : () => {}}
-        _hover={{
-          textDecoration: "none",
-        }}
-      >
-        <Text
-          fontWeight="bold"
-          color={useColorModeValue("gray.600", "gray.200")}
-        >
-          {label}
-        </Text>
-        {children && (
-          <Icon
-            as={ChevronDownIcon}
-            transition="all .25s ease-in-out"
-            transform={isOpen ? "rotate(180deg)" : ""}
-            w={6}
-            h={6}
-          />
-        )}
-      </Flex>
+    <Stack spacing={4}>
+      {href ? (
+        <Link to={href}>{Content}</Link>
+      ) : (
+        Content
+      )}
       <Collapse in={isOpen} animateOpacity>
         <Stack
           pl={4}

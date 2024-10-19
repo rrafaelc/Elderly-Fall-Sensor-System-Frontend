@@ -99,8 +99,8 @@ export const SignInForm = () => {
               align="start"
               justify="space-between"
             >
-              <Checkbox>{t("Lembrar")}</Checkbox>
-              <Link color="blue.400">{t("Esqueceu a senha?")}</Link>
+              {/* <Checkbox>{t("Lembrar")}</Checkbox> */}
+              {/* <Link color="blue.400">{t("Esqueceu a senha?")}</Link> */}
             </Stack>
             <Button
               onClick={() => setMarkallTouched(true)}

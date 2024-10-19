@@ -4,8 +4,6 @@ import { createBrowserRouter, ScrollRestoration } from "react-router-dom";
 import { Layout } from "shared/Layout";
 
 import { homePageLoader } from "./Home/loader";
-import { productPageLoader } from "./Product/loader";
-import { productsPageLoader } from "./Products/loader";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +20,10 @@ export const router = createBrowserRouter([
         lazy: () => import("./Home"),
       },
       {
+        path: "/dashboard",
+        lazy: () => import("./Dashboard"),
+      },
+      {
         path: "/entrar",
         lazy: () => import("./SignIn"),
       },
@@ -30,8 +32,8 @@ export const router = createBrowserRouter([
         lazy: () => import("./SignUp"),
       },
       {
-        path: "/sensores",
-        lazy: () => import("./Sensores"),
+        path: "/sensor",
+        lazy: () => import("./Sensor"),
       },
       {
         path: "/configuracoes/emparelhar-com-a-internet",
@@ -40,10 +42,6 @@ export const router = createBrowserRouter([
       {
         path: "/configuracoes/cadastrar-idoso",
         lazy: () => import("./Configuracoes/CadastrarIdoso"),
-      },
-      {
-        path: "/configuracoes/contato-de-emergencia",
-        lazy: () => import("./Configuracoes/ContatoDeEmergencia"),
       },
       {
         path: "/configuracoes/sensibilidade",

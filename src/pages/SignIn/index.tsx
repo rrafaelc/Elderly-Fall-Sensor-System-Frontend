@@ -16,6 +16,6 @@ export const SignInPage = () => {
   );
 };
 
-export const Component = withRequirePub(SignInPage, { to: "/" });
+export const Component = withRequirePub(SignInPage, { to: "/dashboard" });
 
 export const ErrorBoundary = ErrorPageStrategy;

@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 
 import { Link, useNavigate } from "shared/Router";
-import { useNotImplementedYetToast } from "shared/Toast";
 import { Image } from "@chakra-ui/react";
 
 import { useAuthStore } from "modules/auth/application";
@@ -24,6 +23,7 @@ import { LoaderBar } from "./LoaderBar";
 import { MobileNav } from "./MobileNav";
 
 export const Navbar = () => {
+  const isAuthenticated = useAuthStore((store) => store.isAuthenticated);
   const { isOpen, onToggle, onClose } = useDisclosure();
   const bg = useColorModeValue("white", "gray.800");
 
@@ -57,10 +57,10 @@ export const Navbar = () => {
             aria-label="Toggle Navigation"
           />
         </Flex>
-        <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
+        <Flex flex={{ base: 2, md: 1 }} justify={{ base: "center", md: "start" }}>
           <Text
             as={Link}
-            to="/"
+            to={isAuthenticated ? "/dashboard" : "/"}
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             fontWeight="extrabold"
           >

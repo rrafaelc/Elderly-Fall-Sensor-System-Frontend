@@ -11,11 +11,11 @@ export const useNavItems = () => {
 export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
   {
     label: "Dashboard",
-    href: '/'
+    href: '/dashboard'
   },
   {
-    label: "Meus sensores",
-    href: '/sensores'
+    label: "Meus sensor",
+    href: '/sensor'
   },
   {
     label: "Configurações",
@@ -26,14 +26,9 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
         href: "/configuracoes/emparelhar-com-a-internet",
       },
       {
-        label: "Cadastrar idoso",
+        label: "Cadastrar idoso(a)",
         subLabel: "Cadastre as informações do idoso(a)",
         href: "/configuracoes/cadastrar-idoso",
-      },
-      {
-        label: "Contato de emergência",
-        subLabel: "Adicione ou remova contatos de emergência",
-        href: "/configuracoes/contato-de-emergencia",
       },
       {
         label: "Sensibilidade",

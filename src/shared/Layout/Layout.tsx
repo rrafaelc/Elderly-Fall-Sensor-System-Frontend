@@ -12,7 +12,7 @@ export const Layout = () => {
       <chakra.div pt={{ base: 20, md: 24 }} pb={{ base: 4, md: 6 }}>
         <Outlet />
       </chakra.div>
-      <Footer />
+      {/* <Footer /> */}
     </chakra.main>
   );
 };
