@@ -39,7 +39,13 @@ const PhoneInput = ({
   return (
     <FormControl id={id} isRequired={isRequired} isInvalid={isInvalid}>
       <FormLabel>{children}</FormLabel>
-      <Input {...props} ref={inputRef} placeholder="(__) ______-____" />
+      <Input
+        {...props}
+        ref={inputRef}
+        placeholder="(__) ______-____"
+        inputMode="tel"
+        pattern="\d*"
+      />
       {isInvalid && (
         <FormErrorMessage>{t("Campo obrigatório.")}</FormErrorMessage>
       )}

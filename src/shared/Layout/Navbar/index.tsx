@@ -17,7 +17,6 @@ import { Image } from "@chakra-ui/react";
 
 import { useAuthStore } from "modules/auth/application";
 
-import { ToggleModeButton } from "../ToggleModeButton";
 import { DesktopNav } from "./DesktopNav";
 import { LoaderBar } from "./LoaderBar";
 import { MobileNav } from "./MobileNav";
@@ -57,7 +56,7 @@ export const Navbar = () => {
             aria-label="Toggle Navigation"
           />
         </Flex>
-        <Flex flex={{ base: 2, md: 1 }} justify={{ base: "center", md: "start" }}>
+        <Flex flex={{ base: 5, md: 1 }} justify={{ base: "center", md: "start" }}>
           <Text
             as={Link}
             to={isAuthenticated ? "/dashboard" : "/"}
@@ -85,7 +84,6 @@ export const Navbar = () => {
           <SignInButton />
           <SignUpButton />
           <LogoutButton />
-          <ToggleModeButton />
         </HStack>
       </Flex>
       <LoaderBar />
