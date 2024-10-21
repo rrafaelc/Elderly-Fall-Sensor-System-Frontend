@@ -44,7 +44,6 @@ const PhoneInput = ({
         ref={inputRef}
         placeholder="(__) ______-____"
         inputMode="tel"
-        pattern="\d*"
       />
       {isInvalid && (
         <FormErrorMessage>{t("Campo obrigatório.")}</FormErrorMessage>
