@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import ApexCharts from 'apexcharts';
 import { Box } from '@chakra-ui/react';
 
-// Defina a interface para os dados dos usuários retornados pela API
 interface User {
   id: number;
   name: string;
@@ -17,12 +16,12 @@ const ChartComponent = () => {
     // Função para buscar dados do backend
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/users'); // URL da API Laravel
+        const response = await fetch('http://localhost:8000/api/users');
         const result: User[] = await response.json();
 
         // Extrair dados e categorias usando map
-        const chartData = result.map(user => user.id); // Usando 'id' como valor
-        const chartLabels = result.map(user => user.name); // Usando 'name' como rótulo
+        const chartData = result.map(user => user.id);
+        const chartLabels = result.map(user => user.name);
 
         setData(chartData);
         setLabels(chartLabels);
@@ -40,11 +39,11 @@ const ChartComponent = () => {
       const options = {
         chart: {
           type: 'pie',
-          width: '100%', // Largura responsiva
-          height: '100%', // Altura responsiva
+          width: '100%',
+          height: '100%',
         },
-        series: data, // Usa os dados do estado
-        labels: labels, // Usa os rótulos do estado
+        series: data,
+        labels: labels,
         responsive: [
           {
             breakpoint: 480,
@@ -77,12 +76,12 @@ const ChartComponent = () => {
       borderRadius="8px"
       boxShadow="0 4px 8px rgba(0, 0, 0, 0.1)"
       bg="white"
-      position="fixed" // Usa posição fixa para manter no canto direito
-      bottom={["20px", "30px", "40px"]} // Valor responsivo para espaçamento inferior
-      right={["10px", "20px", "30px"]} // Valor responsivo para espaçamento à direita
-      width={["90%", "70%", "50%", "40%"]} // Largura responsiva
+      position="fixed"
+      bottom={["20px", "30px", "40px"]}
+      right={["10px", "20px", "30px"]}
+      width={["90%", "70%", "50%", "40%"]}
       maxWidth="500px"
-      height={["300px", "400px", "400px"]} // Altura responsiva
+      height={["300px", "400px", "400px"]}
       padding="4"
       display="flex"
       justifyContent="center"
