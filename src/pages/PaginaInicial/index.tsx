@@ -4,8 +4,8 @@ import { ErrorPageStrategy } from "shared/Result";
 
 const PaginaInicialPage = () => {
   return(
-    <Page>
-      <h1>PaginaInicial</h1>
+    <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
+      <h1>PaginaInicialPage</h1>
     </Page>
   );
 };
