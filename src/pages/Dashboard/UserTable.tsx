@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Box } from '@chakra-ui/react';
 
-// Defina a interface para os dados dos usuários
 interface User {
   id: number;
   name: string;
@@ -17,7 +16,7 @@ const UserTable = () => {
     // Função para buscar dados do backend
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/users'); // URL da API
+        const response = await fetch('http://localhost:8000/api/users');
         const data: User[] = await response.json();
         setUsers(data);
         setLoading(false);
@@ -32,19 +31,18 @@ const UserTable = () => {
 
   return (
     <Box
-      position="fixed" // Mantém a tabela fixa no canto esquerdo
-      bottom="20px" // Posição fixa em relação ao rodapé
-      left={["50%", "20px"]} // Centraliza horizontalmente em telas pequenas, fixa à esquerda em grandes
-      right={["50%", "auto"]} // Aplica "auto" em telas grandes e centraliza em pequenas
-      transform={["translate(-50%, 0)", "none"]} // Move para o centro horizontalmente em telas pequenas
-      width={["90%", "70%", "50%", "40%"]} // Largura responsiva
+      position="fixed"
+      bottom="20px"
+      left={["50%", "20px"]}
+      right={["50%", "auto"]}
+      transform={["translate(-50%, 0)", "none"]}
+      width={["90%", "70%", "50%", "40%"]}
       maxWidth="600px"
-      height={["300px", "400px", "370px"]} // Altura responsiva
+      height={["300px", "400px", "370px"]}
       padding="4"
       bg="white"
       boxShadow="lg"
       borderRadius="md"
-      zIndex="1000" // Garante que fique sobre outros elementos
     >
       {loading ? (
         <Spinner size="xl" color="blue.500" />
