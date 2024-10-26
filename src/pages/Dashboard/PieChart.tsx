@@ -81,8 +81,8 @@ const ChartComponent = () => {
       bottom={["20px", "30px", "40px"]} // Valor responsivo para espaçamento inferior
       right={["10px", "20px", "30px"]} // Valor responsivo para espaçamento à direita
       width={["90%", "70%", "50%", "40%"]} // Largura responsiva
-      maxWidth="600px"
-      height={["300px", "400px", "500px"]} // Altura responsiva
+      maxWidth="500px"
+      height={["300px", "400px", "400px"]} // Altura responsiva
       padding="4"
       display="flex"
       justifyContent="center"

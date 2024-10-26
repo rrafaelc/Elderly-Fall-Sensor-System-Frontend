@@ -39,7 +39,7 @@ const UserTable = () => {
       transform={["translate(-50%, 0)", "none"]} // Move para o centro horizontalmente em telas pequenas
       width={["90%", "70%", "50%", "40%"]} // Largura responsiva
       maxWidth="600px"
-      height={["300px", "400px", "500px"]} // Altura responsiva
+      height={["300px", "400px", "370px"]} // Altura responsiva
       padding="4"
       bg="white"
       boxShadow="lg"
