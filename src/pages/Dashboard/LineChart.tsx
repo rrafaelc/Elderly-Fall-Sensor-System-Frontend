@@ -2,15 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import ApexCharts from 'apexcharts';
 import { Box } from '@chakra-ui/react';
 
-interface User {
+interface TrendData {
   id: number;
   name: string;
 }
 
-const ChartComponent = () => {
+const LineChart = () => {
   const host = import.meta.env.VITE_API_HOST;
   const [data, setData] = useState<number[]>([]);
-  const [labels, setLabels] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,14 +18,13 @@ const ChartComponent = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(`${host}/users`);
-        const result: User[] = await response.json();
+        const result: TrendData[] = await response.json();
 
-        // Extrair dados e categorias usando map
+        // Define os dados para o gráfico
         const chartData = result.map(user => user.id);
-        const chartLabels = result.map(user => user.name);
-
+        const chartCategories = result.map(user => user.name);
         setData(chartData);
-        setLabels(chartLabels);
+        setCategories(chartCategories);
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
       }
@@ -35,32 +34,44 @@ const ChartComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (data.length > 0 && labels.length > 0) {
+    if (data.length > 0 && categories.length > 0) {
       // Configuração do gráfico
       const options = {
-        chart: {
-          type: 'pie',
-          width: '100%',
-          height: '100%',
-        },
-        series: data,
-        labels: labels,
-        responsive: [
+        series: [
           {
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 300,
-              },
-              legend: {
-                position: 'bottom',
-              },
-            },
+            name: 'Desktops',
+            data: data,
           },
         ],
+        chart: {
+          type: 'line',
+          height: 350,
+          zoom: {
+            enabled: false,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        stroke: {
+          curve: 'straight',
+        },
+        title: {
+          text: 'Quedas em tempo real',
+          align: 'left',
+        },
+        grid: {
+          row: {
+            colors: ['#f3f3f3', 'transparent'],
+            opacity: 0.5,
+          },
+        },
+        xaxis: {
+          categories: categories,
+        },
       };
 
-      // Criar ou atualizar o gráfico
+      // Cria ou atualiza o gráfico
       const chart = new ApexCharts(chartRef.current, options);
       chart.render();
 
@@ -69,17 +80,17 @@ const ChartComponent = () => {
         chart.destroy();
       };
     }
-  }, [data, labels]);
+  }, [data, categories]);
 
   return (
     <Box
       border="1px solid #ddd"
-      borderRadius="lg"
-      boxShadow="md"
+      borderRadius="8px"
+      boxShadow="0 4px 8px rgba(0, 0, 0, 0.1)"
       bg="white"
       width={["100%", "70%", "50%", "100%"]}
-      maxWidth="500px"
-      height={["300px", "400px", "327px"]}
+      maxWidth="600px"
+      height={["327px", "400px", "327px"]}
       padding="4"
       display="flex"
       justifyContent="center"
@@ -91,4 +102,4 @@ const ChartComponent = () => {
   );
 };
 
-export default ChartComponent;
+export default LineChart;

@@ -31,18 +31,17 @@ const UserTable = () => {
 
   return (
     <Box
-      position="fixed"
-      bottom="20px"
-      left={["50%", "20px"]}
-      right={["50%", "auto"]}
-      transform={["translate(-50%, 0)", "none"]}
-      width={["90%", "70%", "50%", "40%"]}
+      width={["100%", "70%", "50%", "100%"]}
       maxWidth="600px"
-      height={["300px", "400px", "370px"]}
+      height={["300px", "400px", "327px"]}
       padding="4"
       bg="white"
-      boxShadow="lg"
+      boxShadow="md"
       borderRadius="md"
+      overflowY="auto"
+      overflowX="auto"
+      margin="auto"
+      border="1px solid #ddd"
     >
       {loading ? (
         <Spinner size="xl" color="blue.500" />
