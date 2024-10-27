@@ -1,16 +1,24 @@
 import { LoadingOutlined } from "@ant-design/icons";
-import { Steps } from "antd";
+import { Spinner } from "@chakra-ui/react";
+import { Button, Steps } from "antd";
 import { StepProps } from "antd/lib";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
+import { useAuthStore } from "modules/auth/application";
 import { useEffect } from "react";
+import { useNavigate } from "shared/Router";
+import { EmparelharSensor } from "./EmparelharSensor";
 
 export const CadastrarSensorComponent = () => {
-  const { current, loading, setTotalItems } = useCadastrarSensor();
+  const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((store) => store.isAuthenticated);
+
+  const { currentStep, loading, setTotalItems, increaseStep, decreaseStep } =
+    useCadastrarSensor();
 
   const steps = [
     {
       title: "Emparelhar sensor",
-      content: <h1>Teste1</h1>,
+      content: <EmparelharSensor />
     },
     {
       title: "Cadastrar sensor",
@@ -25,19 +33,39 @@ export const CadastrarSensorComponent = () => {
   const items: StepProps[] = steps.map((item, index) => ({
     key: item.title,
     title: item.title,
-    icon: current === index && loading ? <LoadingOutlined /> : undefined,
+    icon: currentStep === index && loading ? <LoadingOutlined /> : undefined,
   }));
 
   useEffect(() => {
-    setTotalItems(items.length);
+    setTotalItems(steps.length);
+
+    if (!isAuthenticated) navigate("/entrar");
   }, []);
 
-  return (
-    <>
-      <div className="w-full max-w-[1200px] px-5">
-        <Steps current={current} items={items} />
-        {steps[current].content}
-      </div>
-    </>
-  );
+  if (isAuthenticated) {
+    return (
+      <>
+        <div className="w-full max-w-[1200px] px-5">
+          <Steps current={currentStep} items={items} />
+          {steps[currentStep].content}
+          {/* <Button
+            onClick={() => decreaseStep()}
+            disabled={currentStep === 0}
+            className="bg-gray-200 hover:bg-gray-300"
+          >
+            Voltar
+          </Button>
+          {currentStep < steps.length - 1 ? (
+            <Button type="primary" onClick={() => increaseStep()}>
+              Próximo
+            </Button>
+          ) : (
+            <Button type="primary">Concluir</Button>
+          )} */}
+        </div>
+      </>
+    );
+  }
+
+  return <Spinner size="xl" color="blue.500" />;
 };

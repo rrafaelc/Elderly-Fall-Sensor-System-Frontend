@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface CadastrarSensorContextType {
-  current: number;
+  currentStep: number;
   totalItems: number;
   loading: boolean;
   setTotalItems: (total: number) => void;
@@ -22,7 +22,7 @@ interface CadastrarSensorProviderProps {
 export const CadastrarSensorProvider: React.FC<
   CadastrarSensorProviderProps
 > = ({ children }) => {
-  const [current, setCurrent] = useState<number>(0);
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [totalItems, settotalItems] = useState<number>(0);
   const [loading, setloading] = useState<boolean>(false);
 
@@ -35,25 +35,25 @@ export const CadastrarSensorProvider: React.FC<
   };
 
   const increaseStep = () => {
-    if (current + 1 > totalItems) return;
+    if (currentStep + 1 > totalItems) return;
 
-    setCurrent((prev) => (prev += 1));
+    setCurrentStep((prev) => (prev += 1));
   };
 
   const decreaseStep = () => {
-    if (current - 1 < 0) return;
+    if (currentStep - 1 < 0) return;
 
-    setCurrent((prev) => (prev -= 1));
+    setCurrentStep((prev) => (prev -= 1));
   };
 
   const resetSteps = () => {
-    setCurrent(0);
+    setCurrentStep(0);
   };
 
   return (
     <CadastrarSensorContext.Provider
       value={{
-        current,
+        currentStep,
         totalItems,
         loading,
         setTotalItems,
