@@ -17,7 +17,7 @@ const ChartComponent = () => {
     // Função para buscar dados do backend
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/users`);
+        const response = await fetch(`${host}/user`);
         const result: User[] = await response.json();
 
         // Extrair dados e categorias usando map

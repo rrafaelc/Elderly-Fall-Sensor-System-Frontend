@@ -17,7 +17,7 @@ const LineChart = () => {
     // Função para buscar dados do backend
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/users`);
+        const response = await fetch(`${host}/user`);
         const result: TrendData[] = await response.json();
 
         // Define os dados para o gráfico

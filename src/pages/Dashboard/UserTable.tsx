@@ -16,7 +16,7 @@ const UserTable = () => {
     // Função para buscar dados do backend
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/users');
+        const response = await fetch('http://localhost:8000/api/user');
         const data: User[] = await response.json();
         setUsers(data);
         setLoading(false);
