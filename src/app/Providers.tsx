@@ -8,17 +8,21 @@ import { queryClient } from "utils";
 
 import { AuthProvider } from "modules/auth/application";
 
+import ContextProvider from "contexts"
+
 interface IProps {
   children: ReactNode;
 }
 
 const Providers = ({ children }: IProps) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={theme}>
-        <AuthProvider>{children}</AuthProvider>
-      </ChakraProvider>
-    </QueryClientProvider>
+    <ContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider theme={theme}>
+          <AuthProvider>{children}</AuthProvider>
+        </ChakraProvider>
+      </QueryClientProvider>
+    </ContextProvider>
   );
 };
 

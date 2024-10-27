@@ -22,12 +22,7 @@
         "checkFragmentShorthand": true
       }
     ],
-    "no-console": [
-      "warn",
-      {
-        "allow": ["warn", "error", "info"]
-      }
-    ],
+    "no-console": "off",
     "no-restricted-imports": [
       "error",
       {

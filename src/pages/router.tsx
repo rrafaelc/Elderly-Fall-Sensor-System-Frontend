@@ -31,14 +31,14 @@ export const router = createBrowserRouter([
         path: "/sensor",
         lazy: () => import("./Sensor"),
       },
-      {
-        path: "/configuracoes/emparelhar-com-a-internet",
-        lazy: () => import("./Configuracoes/EmparelharComInternet"),
-      },
-      {
-        path: "/configuracoes/cadastrar-idoso",
-        lazy: () => import("./Configuracoes/CadastrarIdoso"),
-      },
+      // {
+      //   path: "/configuracoes/emparelhar-com-a-internet",
+      //   lazy: () => import("./Configuracoes/EmparelharComInternet"),
+      // },
+      // {
+      //   path: "/configuracoes/cadastrar-idoso",
+      //   lazy: () => import("./Configuracoes/CadastrarIdoso"),
+      // },
       {
         path: "/configuracoes/sensibilidade",
         lazy: () => import("./Configuracoes/Sensibilidade"),
@@ -51,10 +51,10 @@ export const router = createBrowserRouter([
         path: "/informacoes/historico-de-acidentes",
         lazy: () => import("./Informacoes/HistoricoDeAcidentes"),
       },
-      {
-        path: "/informacoes/alarmes-e-notificacoes",
-        lazy: () => import("./Informacoes/AlarmeENotificacoes"),
-      },
+      // {
+      //   path: "/informacoes/alarmes-e-notificacoes",
+      //   lazy: () => import("./Informacoes/AlarmeENotificacoes"),
+      // },
       {
         path: "/inspiracao",
         lazy: () => import("./Inspiracao"),
@@ -70,6 +70,10 @@ export const router = createBrowserRouter([
       {
         path: "/suporte",
         lazy: () => import("./Suporte"),
+      },
+      {
+        path: "/cadastro-do-sensor",
+        lazy: () => import("./CadastrarSensor"),
       },
     ],
   },
