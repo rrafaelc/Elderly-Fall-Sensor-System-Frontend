@@ -14,7 +14,7 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
     href: '/dashboard'
   },
   {
-    label: "Meus sensor",
+    label: "Meu sensor",
     href: '/sensor'
   },
   {
