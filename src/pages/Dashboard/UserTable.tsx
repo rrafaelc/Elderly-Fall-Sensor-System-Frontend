@@ -9,6 +9,7 @@ interface User {
 }
 
 const UserTable = () => {
+  const host = import.meta.env.VITE_API_HOST;
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -16,7 +17,7 @@ const UserTable = () => {
     // Função para buscar dados do backend
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/user');
+        const response = await fetch(`${host}/user`);
         const data: User[] = await response.json();
         setUsers(data);
         setLoading(false);
