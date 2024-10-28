@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Button, Input, Typography, Card, Select, DatePicker, Form, message, Image } from "antd";
+import { Button, Input, Typography, Card, Select, DatePicker, Form, message } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Option } = Select;
 
 export const CadastrarIdoso = () => {

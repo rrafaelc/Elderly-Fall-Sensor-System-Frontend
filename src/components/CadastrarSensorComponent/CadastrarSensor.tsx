@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Button, Input, Typography, Card, message } from "antd";
+import { Button, Input, Typography, Card } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
+import { toast } from "react-toastify";
 
 const { Title, Text } = Typography;
 
@@ -11,11 +12,13 @@ export const CadastrarSensor = () => {
 
   const handleSubmit = async () => {
     if (!serialNumber) {
-      message.warning("Por favor, insira o número de série.");
+      toast.warning("Por favor, insira o número de série.");
       return;
     }
 
     setLoading(true);
+
+    const toastId = toast.loading("Cadastrando o sensor...");
 
     setTimeout(async () => {
       try {
@@ -28,13 +31,28 @@ export const CadastrarSensor = () => {
         });
 
         if (response.ok) {
-          message.success("Sensor cadastrado com sucesso!");
+          toast.update(toastId, {
+            render: "Sensor cadastrado com sucesso",
+            type: "success",
+            isLoading: false,
+            autoClose: 5000
+          });
         } else {
           const errorData = await response.json();
-          message.error(errorData.message || "Erro ao cadastrar o sensor.");
+          toast.update(toastId, {
+            render: errorData.message || "Erro ao cadastrar o sensor.",
+            type: "error",
+            isLoading: false,
+            autoClose: 5000
+          });
         }
       } catch (error) {
-        message.error("Erro ao se conectar ao servidor.");
+        toast.update(toastId, {
+          render: "Erro ao se conectar ao servidor.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000
+        });
       } finally {
         setLoading(false);
       }
