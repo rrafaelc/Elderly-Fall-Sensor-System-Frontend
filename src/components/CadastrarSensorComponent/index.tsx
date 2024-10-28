@@ -7,6 +7,7 @@ import { useAuthStore } from "modules/auth/application";
 import { useEffect } from "react";
 import { useNavigate } from "shared/Router";
 import { EmparelharSensor } from "./EmparelharSensor";
+import { CadastrarSensor } from "./CadastrarSensor";
 
 export const CadastrarSensorComponent = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export const CadastrarSensorComponent = () => {
     },
     {
       title: "Cadastrar sensor",
-      content: <h1>Teste2</h1>,
+      content: <CadastrarSensor />
     },
     {
       title: "Cadastrar idoso(a)",
