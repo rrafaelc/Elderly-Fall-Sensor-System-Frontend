@@ -109,7 +109,7 @@ export const CadastrarIdoso = () => {
             type="primary"
             htmlType="submit"
             loading={loading}
-            className="w-full bg-green-500 hover:bg-green-600 mb-2 md:mb-4"
+            className="w-full mb-2 md:mb-4"
           >
             Cadastrar
           </Button>

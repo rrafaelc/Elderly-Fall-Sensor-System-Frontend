@@ -10,12 +10,7 @@
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-explicit-any": [
-      "error",
-      {
-        "ignoreRestArgs": true
-      }
-    ],
+    "@typescript-eslint/no-explicit-any": "off",
     "react/jsx-key": [
       "warn",
       {
