@@ -7,7 +7,7 @@ const { Title, Text } = Typography;
 export const CadastrarSensor = () => {
   const { loading, setLoading, increaseStep, decreaseStep } =
     useCadastrarSensor();
-  const [serialNumber, setSerialNumber] = useState("");
+  const [serialNumber, setSerialNumber] = useState("1");
 
   const handleSubmit = async () => {
     if (!serialNumber) {
@@ -17,26 +17,30 @@ export const CadastrarSensor = () => {
 
     setLoading(true);
 
-    try {
-      const response = await fetch("/api/sensors", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ serialNumber }),
-      });
+    setTimeout(async () => {
+      try {
+        const response = await fetch("/api/sensors", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ serialNumber }),
+        });
 
-      if (response.ok) {
-        message.success("Sensor cadastrado com sucesso!");
-      } else {
-        const errorData = await response.json();
-        message.error(errorData.message || "Erro ao cadastrar o sensor.");
+        if (response.ok) {
+          message.success("Sensor cadastrado com sucesso!");
+        } else {
+          const errorData = await response.json();
+          message.error(errorData.message || "Erro ao cadastrar o sensor.");
+        }
+      } catch (error) {
+        message.error("Erro ao se conectar ao servidor.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      message.error("Erro ao se conectar ao servidor.");
-    } finally {
-      setLoading(false);
-    }
+
+      increaseStep();
+    }, 2000);
   };
 
   return (
@@ -63,7 +67,7 @@ export const CadastrarSensor = () => {
             Voltar
           </Button>
           <Button type="primary" loading={loading} onClick={handleSubmit}>
-            {loading ? "Cadastrando" : "Cadastrar"}
+            {loading ? "Aguarde" : "Cadastrar"}
           </Button>
         </div>
       </Card>

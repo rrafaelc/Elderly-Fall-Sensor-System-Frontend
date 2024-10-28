@@ -1,6 +1,6 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spinner } from "@chakra-ui/react";
-import { Button, Steps } from "antd";
+import { Steps } from "antd";
 import { StepProps } from "antd/lib";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 import { useAuthStore } from "modules/auth/application";
@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useNavigate } from "shared/Router";
 import { EmparelharSensor } from "./EmparelharSensor";
 import { CadastrarSensor } from "./CadastrarSensor";
+import { CadastrarIdoso } from "./CadastrarIdoso";
 
 export const CadastrarSensorComponent = () => {
   const navigate = useNavigate();
@@ -26,8 +27,8 @@ export const CadastrarSensorComponent = () => {
       content: <CadastrarSensor />
     },
     {
-      title: "Cadastrar idoso(a)",
-      content: <h1>Teste3</h1>,
+      title: "Cadastrar idoso",
+      content: <CadastrarIdoso />
     },
   ];
 
@@ -49,20 +50,6 @@ export const CadastrarSensorComponent = () => {
         <div className="w-full max-w-[1200px] px-5">
           <Steps current={currentStep} items={items} />
           {steps[currentStep].content}
-          {/* <Button
-            onClick={() => decreaseStep()}
-            disabled={currentStep === 0}
-            className="bg-gray-200 hover:bg-gray-300"
-          >
-            Voltar
-          </Button>
-          {currentStep < steps.length - 1 ? (
-            <Button type="primary" onClick={() => increaseStep()}>
-              Próximo
-            </Button>
-          ) : (
-            <Button type="primary">Concluir</Button>
-          )} */}
         </div>
       </>
     );
