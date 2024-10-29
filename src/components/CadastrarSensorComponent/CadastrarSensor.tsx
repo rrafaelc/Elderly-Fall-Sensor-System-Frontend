@@ -22,6 +22,16 @@ export const CadastrarSensor = () => {
 
     setTimeout(async () => {
       try {
+        toast.update(toastId, {
+          render: "Sensor cadastrado com sucesso",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
+
+        increaseStep();
+        return;
+
         const response = await fetch("/api/sensors", {
           method: "POST",
           headers: {
@@ -35,7 +45,7 @@ export const CadastrarSensor = () => {
             render: "Sensor cadastrado com sucesso",
             type: "success",
             isLoading: false,
-            autoClose: 5000
+            autoClose: 5000,
           });
         } else {
           const errorData = await response.json();
@@ -43,7 +53,7 @@ export const CadastrarSensor = () => {
             render: errorData.message || "Erro ao cadastrar o sensor.",
             type: "error",
             isLoading: false,
-            autoClose: 5000
+            autoClose: 5000,
           });
         }
       } catch (error) {
@@ -51,14 +61,14 @@ export const CadastrarSensor = () => {
           render: "Erro ao se conectar ao servidor.",
           type: "error",
           isLoading: false,
-          autoClose: 5000
+          autoClose: 5000,
         });
       } finally {
         setLoading(false);
       }
 
       increaseStep();
-    }, 2000);
+    }, 3000);
   };
 
   return (

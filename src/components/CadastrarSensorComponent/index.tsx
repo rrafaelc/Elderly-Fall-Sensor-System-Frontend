@@ -9,7 +9,7 @@ import { CadastrarSensor } from "./CadastrarSensor";
 import { CadastrarIdoso } from "./CadastrarIdoso";
 
 export const CadastrarSensorComponent = () => {
-  const { currentStep, loading, setTotalItems, increaseStep, decreaseStep } =
+  const { currentStep, loading, setTotalItems, increaseStep, decreaseStep, resetSteps } =
     useCadastrarSensor();
 
   const steps = [
@@ -35,12 +35,16 @@ export const CadastrarSensorComponent = () => {
 
   useEffect(() => {
     setTotalItems(steps.length);
+
+    return () => {
+      resetSteps()
+    }
   }, []);
 
   return (
     <>
       <div className="w-full max-w-[1200px] px-5">
-        <Steps current={currentStep} items={items} />
+        <Steps current={currentStep} items={items} className="md:mb-2" />
         {steps[currentStep].content}
       </div>
     </>
