@@ -21,16 +21,6 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
     label: "Configurações",
     children: [
       {
-        label: "Emparelhar com a internet",
-        subLabel: "Conecte o sensor com a internet",
-        href: "/configuracoes/emparelhar-com-a-internet",
-      },
-      {
-        label: "Cadastrar idoso(a)",
-        subLabel: "Cadastre as informações do idoso(a)",
-        href: "/configuracoes/cadastrar-idoso",
-      },
-      {
         label: "Sensibilidade",
         subLabel: "Ajuste a sensibilidade do sensor",
         href: "/configuracoes/sensibilidade",
@@ -49,11 +39,6 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
         label: "Histórico de acidentes",
         subLabel: "Veja um dashboard com o histórico de acidentes registrado pelo sensor",
         href: "/informacoes/historico-de-acidentes",
-      },
-      {
-        label: "Alarmes e notificações",
-        subLabel: "Defina alarmes e notificações",
-        href: "/informacoes/alarmes-e-notificacoes",
       },
     ],
   },
