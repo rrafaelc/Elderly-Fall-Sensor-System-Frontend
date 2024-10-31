@@ -8,7 +8,7 @@ const { Title, Text } = Typography;
 export const CadastrarSensor = () => {
   const { loading, setLoading, increaseStep, decreaseStep } =
     useCadastrarSensor();
-  const [serialNumber, setSerialNumber] = useState("1");
+  const [serialNumber, setSerialNumber] = useState("");
 
   const handleSubmit = async () => {
     if (!serialNumber) {
