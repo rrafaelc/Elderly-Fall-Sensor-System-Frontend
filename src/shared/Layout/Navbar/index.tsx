@@ -22,7 +22,6 @@ import { LoaderBar } from "./LoaderBar";
 import { MobileNav } from "./MobileNav";
 import HideOnScrollNavbar from "./HideOnScrollNavbar";
 
-
 export const Navbar = () => {
   const isAuthenticated = useAuthStore((store) => store.isAuthenticated);
   const { isOpen, onToggle, onClose } = useDisclosure();
