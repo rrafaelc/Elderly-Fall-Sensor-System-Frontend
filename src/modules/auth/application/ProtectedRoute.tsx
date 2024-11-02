@@ -30,7 +30,7 @@ export const ProtectedRoute = ({
     };
 
     try {
-      const response = await axios.get(`${host}/v1/device/${user.id}`, config);
+      const response = await axios.get(`${host}/v1/device/user/${user.id}`, config);
       if (response.status >= 200 && response.status < 300) {
         setHasSensors(true);
       }
