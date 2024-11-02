@@ -1,17 +1,30 @@
-import { Button, Input, Typography, Card, Select, Form, InputNumber } from "antd";
+import {
+  Button,
+  Input,
+  Typography,
+  Card,
+  Select,
+  Form,
+  InputNumber,
+} from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
-import { toast } from "react-toastify";
+import { Id, toast } from "react-toastify";
 import axios from "axios";
 import { PatternFormat } from "react-number-format";
 
+import { LinkOutlined } from "@ant-design/icons";
+
+const { Text, Link } = Typography;
+
 import { Idoso } from "dtos/Idoso.dto";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IUser } from "modules/auth/types";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { ptBR } from "date-fns/locale";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
+import { ViaCepDto } from "dtos/ViaCep.dto";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -21,6 +34,7 @@ registerLocale("pt-BR", ptBR);
 export const CadastrarIdoso = () => {
   const host = import.meta.env.VITE_API_HOST;
   const navigate = useNavigate();
+  const [form] = Form.useForm();
   const {
     loading,
     serialNumber,
@@ -30,12 +44,79 @@ export const CadastrarIdoso = () => {
     decreaseStep,
   } = useCadastrarSensor();
   const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [cep, setCep] = useState("");
+  const [viaCep, setViaCep] = useState<ViaCepDto | null>(null);
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user")!) as IUser;
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
+  };
+
+  const handleCepChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newCep = event.currentTarget.value;
+    setCep(newCep);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    if (newCep.replace(/[^\d]/g, "").length === 8) {
+      setLoading(true);
+      const toastId = toast.loading("Buscando o CEP...");
+      timeoutRef.current = setTimeout(() => {
+        buscarCep(newCep, toastId);
+      }, 3000);
+    }
+  };
+
+  const buscarCep = async (cep: string, toastId: Id) => {
+    try {
+      const response = await axios.get<ViaCepDto>(
+        `https://viacep.com.br/ws/${cep}/json/`
+      );
+
+      if (response.data.erro) {
+        toast.update(toastId, {
+          render: "CEP não existe, tente novamente.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+
+        return;
+      }
+
+      if (response.data) {
+        toast.update(toastId, {
+          render: "Cep preenchido com sucesso!",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
+
+        const viaCepData = response.data;
+        setViaCep(viaCepData);
+        form.setFieldsValue({
+          estado: viaCepData.uf,
+          cidade: viaCepData.localidade,
+          bairro: viaCepData.bairro,
+          rua: viaCepData.logradouro,
+        });
+      }
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Erro ao buscar o CEP.",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async ({
@@ -46,7 +127,7 @@ export const CadastrarIdoso = () => {
     tipoSanguineo,
     altura,
     peso,
-    cep,
+    cep: cepData,
     estado,
     cidade,
     bairro,
@@ -55,9 +136,15 @@ export const CadastrarIdoso = () => {
     condicoesPreExistentes,
   }: Idoso) => {
     const cleanCpf = cpf.replace(/[^\d]/g, "");
+    const cleanCep = cep.replace(/[^\d]/g, "");
 
     if (!cleanCpf || cleanCpf.length !== 11) {
       toast.warning("Por favor, insira um CPF válido.");
+      return;
+    }
+
+    if (!cleanCep || cleanCep.length !== 8) {
+      toast.warning("Por favor, insira um CEP válido.");
       return;
     }
 
@@ -76,13 +163,13 @@ export const CadastrarIdoso = () => {
     idosoFormData.append("blood_type", tipoSanguineo);
     idosoFormData.append("altura", altura.toString());
     idosoFormData.append("peso", peso.toString());
-    idosoFormData.append("zip_code", cep);
+    idosoFormData.append("zip_code", cepData.replace(/_+$/, ""));
     idosoFormData.append("state", estado);
     idosoFormData.append("neighborhood", bairro);
     idosoFormData.append("city", cidade);
     idosoFormData.append("street", rua);
     idosoFormData.append("street_number", numero.toString());
-    idosoFormData.append("condicoesPreExistentes", condicoesPreExistentes);
+    idosoFormData.append("conditions", condicoesPreExistentes ?? null);
     idosoFormData.append("whatsapp_number", "1");
     idosoFormData.append("email", "temp");
     idosoFormData.append("address", "temp");
@@ -153,7 +240,7 @@ export const CadastrarIdoso = () => {
           Cadastrar Idoso
         </Title>
 
-        <Form layout="vertical" onFinish={handleSubmit}>
+        <Form layout="vertical" form={form} onFinish={handleSubmit}>
           <Form.Item label="Número de Série do Sensor">
             <Input
               name="numeroDeSerie"
@@ -261,22 +348,28 @@ export const CadastrarIdoso = () => {
             <Input type="number" placeholder="Peso em kg" />
           </Form.Item>
 
-          <Form.Item
-            label="CEP"
-            name="cep"
-            rules={[
-              {
-                required: true,
-                message: "Por favor, insira o cep.",
-              },
-            ]}
-          >
-            <PatternFormat
-              format="#####-###"
-              allowEmptyFormatting
-              mask="_"
-              customInput={Input}
-            />
+          <Form.Item label="CEP" name="cep">
+            <div>
+              <PatternFormat
+                format="#####-###"
+                allowEmptyFormatting
+                mask="_"
+                value={cep}
+                onChange={handleCepChange}
+                disabled={loading}
+                customInput={Input}
+              />
+              <div className="flex flex-col sm:flex-row sm:gap-2">
+                <Text>Não sabe o cep?</Text>
+                <Link
+                  strong
+                  href="https://buscacepinter.correios.com.br/app/endereco/index.php"
+                  target="_blank"
+                >
+                  Clique aqui <LinkOutlined />
+                </Link>
+              </div>
+            </div>
           </Form.Item>
 
           <Form.Item
@@ -289,7 +382,10 @@ export const CadastrarIdoso = () => {
               },
             ]}
           >
-            <Input placeholder="SP" maxLength={2} showCount />
+            <Input
+              placeholder="SP"
+              disabled
+            />
           </Form.Item>
 
           <Form.Item
@@ -302,7 +398,7 @@ export const CadastrarIdoso = () => {
               },
             ]}
           >
-            <Input placeholder="Itapira" />
+            <Input placeholder="Itapira" disabled />
           </Form.Item>
 
           <Form.Item
@@ -315,7 +411,7 @@ export const CadastrarIdoso = () => {
               },
             ]}
           >
-            <Input placeholder="Centro" />
+            <Input placeholder="Centro" disabled />
           </Form.Item>
 
           <Form.Item
@@ -328,7 +424,12 @@ export const CadastrarIdoso = () => {
               },
             ]}
           >
-            <Input placeholder="Rua" maxLength={50} showCount />
+            <Input
+              placeholder="Rua"
+              maxLength={50}
+              showCount
+              disabled
+            />
           </Form.Item>
 
           <Form.Item
