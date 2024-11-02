@@ -1,4 +1,3 @@
-// components/HideOnScrollNavbar.tsx
 import { Box } from "@chakra-ui/react";
 import { ReactNode, useState, useEffect } from "react";
 
