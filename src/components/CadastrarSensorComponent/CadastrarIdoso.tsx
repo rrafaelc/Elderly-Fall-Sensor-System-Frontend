@@ -7,10 +7,11 @@ import { PatternFormat } from "react-number-format";
 import { Idoso } from "dtos/Idoso.dto";
 import { useState } from "react";
 import { IUser } from "modules/auth/types";
-import DatePicker, {registerLocale} from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import { ptBR } from "date-fns/locale";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -19,7 +20,8 @@ registerLocale("pt-BR", ptBR);
 
 export const CadastrarIdoso = () => {
   const host = import.meta.env.VITE_API_HOST;
-  const { loading, serialNumber, setLoading, decreaseStep } =
+  const navigate = useNavigate();
+  const { loading, serialNumber, setFinished, setLoading, decreaseStep } =
     useCadastrarSensor();
   const [birthDate, setBirthDate] = useState<Date | null>(null);
 
@@ -73,12 +75,32 @@ export const CadastrarIdoso = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        toast.update(toastId, {
-          render: "Idoso cadastrado com sucesso",
-          type: "success",
-          isLoading: false,
-          autoClose: 5000,
-        });
+        const response = await axios.post(
+          `${host}/v1/devicecreate`,
+          bodyFormData,
+          config
+        );
+
+        if (response.status >= 200 && response.status < 300) {
+          toast.update(toastId, {
+            render: "Idoso cadastrado com sucesso",
+            type: "success",
+            isLoading: false,
+            autoClose: 5000,
+          });
+
+          setFinished(true);
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 1000)
+        } else {
+          toast.update(toastId, {
+            render: "Erro ao cadastrar o idoso.",
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        }
       } else {
         toast.update(toastId, {
           render: "Erro ao cadastrar o idoso.",

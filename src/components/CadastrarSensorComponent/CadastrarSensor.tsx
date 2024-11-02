@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Input, Typography, Card } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 import { toast } from "react-toastify";
@@ -58,6 +58,10 @@ export const CadastrarSensor = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setSerialNumber("");
+  }, [])
 
   return (
     <div className="flex items-center justify-center py-2">

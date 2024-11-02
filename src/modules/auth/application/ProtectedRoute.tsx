@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "modules/auth/application";
 import axios from "axios";
 import { Spinner } from "@chakra-ui/react";
+import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 
 interface ProtectedRouteProps {
   children?: ReactNode;
@@ -14,6 +15,7 @@ export const ProtectedRoute = ({
   redirectTo = "/entrar",
 }: ProtectedRouteProps) => {
   const host = import.meta.env.VITE_API_HOST;
+  const { finished } = useCadastrarSensor();
   const isAuthenticated = useAuthStore((store) => store.isAuthenticated);
   const [hasSensors, setHasSensors] = useState<boolean | null>(null);
   const location = useLocation();
@@ -38,7 +40,7 @@ export const ProtectedRoute = ({
     if (isAuthenticated) {
       checkSensors();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, finished]);
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace />;

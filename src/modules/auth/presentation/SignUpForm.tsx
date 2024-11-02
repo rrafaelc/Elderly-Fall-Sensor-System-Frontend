@@ -8,7 +8,6 @@ import {
   Text,
   useColorModeValue,
   VStack,
-  useToast,
 } from "@chakra-ui/react";
 import { useSecondaryTextColor } from "theme";
 
@@ -19,10 +18,10 @@ import { PhoneInput, TextInput } from "shared/Form";
 import { useAuthStore } from "../application";
 import { useSignUpNotifications } from "./useSignUpNotifications";
 import { useNavigate } from "shared/Router";
+import { toast } from "react-toastify";
 
 export const SignUpForm = () => {
   const secondaryColor = useSecondaryTextColor();
-  const toast = useToast();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -34,7 +33,6 @@ export const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [notifySuccess, notifyFailure] = useSignUpNotifications();
   const register = useAuthStore((store) => store.register);
   const navigate = useNavigate();
 
@@ -77,22 +75,14 @@ export const SignUpForm = () => {
             }
 
             if (password !== confirmPassword) {
-              toast({
-                status: "error",
-                title: t("Senhas não coincidem"),
-                description: t("Confirme a senha exatamente igual a senha."),
-              });
+              toast.warn("Senhas não coincidem")
               return;
             }
 
             const onlyNumbers = whatsapp.replace(/\D/g, "");
 
             if (onlyNumbers.length < 11) {
-              toast({
-                status: "error",
-                title: t("Número Whatsapp incorreto"),
-                description: t("Digite corretamente os 11 dígitos do seu número de celular incluindo o DDD."),
-              });
+              toast.warn("Número Whatsapp incorreto, digite corretamente os 11 dígitos do seu número de celular incluindo o DDD.")
 
               if (!onlyNumbers.length) {
                 setWhatsapp("")
@@ -107,10 +97,10 @@ export const SignUpForm = () => {
               whatsapp_number: parseInt(onlyNumbers),
             })
               .then(() => {
-                notifySuccess();
+                toast.success("Registro realizado com sucesso!");
                 navigate("/entrar");
               })
-              .catch(() => notifyFailure());
+              .catch(() => toast.error("Erro ao registrar sua conta!"));
           }}
         >
           <TextInput
