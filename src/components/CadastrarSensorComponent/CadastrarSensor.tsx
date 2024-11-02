@@ -2,13 +2,18 @@ import { useState } from "react";
 import { Button, Input, Typography, Card } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const { Title, Text } = Typography;
 
 export const CadastrarSensor = () => {
-  const { loading, setLoading, increaseStep, decreaseStep } =
+  const host = import.meta.env.VITE_API_HOST;
+  const { loading, serialNumber, setSerialNumber, setLoading, increaseStep, decreaseStep } =
     useCadastrarSensor();
-  const [serialNumber, setSerialNumber] = useState("");
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
 
   const handleSubmit = async () => {
     if (!serialNumber) {
@@ -20,8 +25,12 @@ export const CadastrarSensor = () => {
 
     const toastId = toast.loading("Cadastrando o sensor...");
 
-    setTimeout(async () => {
-      try {
+    try {
+      const bodyFormData = new FormData();
+      bodyFormData.append('serial_number', serialNumber);
+
+      const response = await axios.post(`${host}/v1/serial`, bodyFormData, config);
+      if (response.status >= 200 && response.status < 300) {
         toast.update(toastId, {
           render: "Sensor cadastrado com sucesso",
           type: "success",
@@ -30,45 +39,24 @@ export const CadastrarSensor = () => {
         });
 
         increaseStep();
-        return;
-
-        const response = await fetch("/api/sensors", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ serialNumber }),
-        });
-
-        if (response.ok) {
-          toast.update(toastId, {
-            render: "Sensor cadastrado com sucesso",
-            type: "success",
-            isLoading: false,
-            autoClose: 5000,
-          });
-        } else {
-          const errorData = await response.json();
-          toast.update(toastId, {
-            render: errorData.message || "Erro ao cadastrar o sensor.",
-            type: "error",
-            isLoading: false,
-            autoClose: 5000,
-          });
-        }
-      } catch (error) {
+      } else {
         toast.update(toastId, {
-          render: "Erro ao se conectar ao servidor.",
+          render: "Erro ao cadastrar o sensor.",
           type: "error",
           isLoading: false,
           autoClose: 5000,
         });
-      } finally {
-        setLoading(false);
       }
-
-      increaseStep();
-    }, 3000);
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Erro ao se conectar ao servidor.",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

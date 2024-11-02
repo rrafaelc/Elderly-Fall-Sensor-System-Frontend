@@ -1,36 +1,99 @@
-import { useState } from "react";
-import { Button, Input, Typography, Card, Select, DatePicker, Form, message } from "antd";
+import { Button, Input, Typography, Card, Select, Form } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { PatternFormat } from "react-number-format";
+
+import { Idoso } from "dtos/Idoso.dto";
+import { useState } from "react";
+import { IUser } from "modules/auth/types";
+import DatePicker, {registerLocale} from "react-datepicker";
+import { ptBR } from "date-fns/locale";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const { Title } = Typography;
 const { Option } = Select;
 
-export const CadastrarIdoso = () => {
-  const { loading, setLoading, increaseStep, decreaseStep } =
-    useCadastrarSensor();
-  const [serialNumber] = useState("123456789");
+registerLocale("pt-BR", ptBR);
 
-  // eslint-disable-next-line
-  const handleSubmit = async (values: any) => {
+export const CadastrarIdoso = () => {
+  const host = import.meta.env.VITE_API_HOST;
+  const { loading, serialNumber, setLoading, decreaseStep } =
+    useCadastrarSensor();
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user")!) as IUser;
+
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+
+  const handleSubmit = async ({
+    nomeCompleto,
+    rg,
+    cpf,
+    dataNasc,
+    tipoSanguineo,
+    altura,
+    peso,
+    condicoesPreExistentes,
+  }: Idoso) => {
+    const cleanCpf = cpf.replace(/[^\d]/g, "");
+
+    if (!cleanCpf || cleanCpf.length !== 11) {
+      toast.warning("Por favor, insira um CPF válido.");
+      return;
+    }
+
     setLoading(true);
 
-    try {
-      const response = await fetch("/api/pacientes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...values, serialNumber }),
-      });
+    const toastId = toast.loading("Cadastrando o idoso...");
 
-      if (response.ok) {
-        message.success("Cadastro realizado com sucesso!");
+    const bodyFormData = new FormData();
+    bodyFormData.append("user_id", user.id.toString());
+    bodyFormData.append("name", nomeCompleto);
+    bodyFormData.append("rg", rg);
+    bodyFormData.append("cpf", cleanCpf);
+    bodyFormData.append("dataNasc", dataNasc);
+    bodyFormData.append("tipoSanguineo", tipoSanguineo);
+    bodyFormData.append("altura", altura.toString());
+    bodyFormData.append("peso", peso.toString());
+    bodyFormData.append("condicoesPreExistentes", condicoesPreExistentes);
+    bodyFormData.append("whatsapp_number", "1");
+    bodyFormData.append("email", "temp");
+    bodyFormData.append("address", "temp");
+
+    try {
+      const response = await axios.post(
+        `${host}/v1/person`,
+        bodyFormData,
+        config
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        toast.update(toastId, {
+          render: "Idoso cadastrado com sucesso",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
       } else {
-        const errorData = await response.json();
-        message.error(errorData.message || "Erro ao realizar o cadastro.");
+        toast.update(toastId, {
+          render: "Erro ao cadastrar o idoso.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
       }
     } catch (error) {
-      message.error("Erro ao se conectar ao servidor.");
+      toast.update(toastId, {
+        render: "Erro ao se conectar ao servidor.",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -46,24 +109,69 @@ export const CadastrarIdoso = () => {
         <Form layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             label="Nome Completo"
-            name="nome"
-            rules={[{ required: true, message: "Por favor, insira o nome completo." }]}
+            name="nomeCompleto"
+            rules={[
+              { required: true, message: "Por favor, insira o nome completo." },
+            ]}
           >
             <Input placeholder="Nome Completo" />
           </Form.Item>
 
           <Form.Item
-            label="Data de Nascimento"
-            name="dataNascimento"
-            rules={[{ required: true, message: "Por favor, selecione a data de nascimento." }]}
+            label="RG"
+            name="rg"
+            rules={[{ required: true, message: "Por favor, insira o RG." }]}
           >
-            <DatePicker className="w-full" />
+            <Input placeholder="RG" />
+          </Form.Item>
+
+          <Form.Item
+            label="CPF"
+            name="cpf"
+            rules={[{ required: true, message: "Por favor, insira o CPF." }]}
+          >
+            <PatternFormat
+              format="###.###.###-##"
+              allowEmptyFormatting
+              mask="_"
+              customInput={Input}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Data de Nascimento"
+            name="dataNasc"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, selecione a data de nascimento.",
+              },
+            ]}
+          >
+            <DatePicker
+              className="w-full"
+              selected={birthDate}
+              onChange={(date) => setBirthDate(date)}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Data de Nascimento"
+              maxDate={new Date()}
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              locale="pt-BR"
+              customInput={<Input />}
+            />
           </Form.Item>
 
           <Form.Item
             label="Tipo Sanguíneo"
             name="tipoSanguineo"
-            rules={[{ required: true, message: "Por favor, selecione o tipo sanguíneo." }]}
+            rules={[
+              {
+                required: true,
+                message: "Por favor, selecione o tipo sanguíneo.",
+              },
+            ]}
           >
             <Select placeholder="Selecione o tipo sanguíneo">
               <Option value="A+">A+</Option>
@@ -95,14 +203,20 @@ export const CadastrarIdoso = () => {
 
           <Form.Item
             label="Condições Preexistentes"
-            name="condicoes"
+            name="condicoesPreExistentes"
             rules={[{ required: false }]}
           >
             <Input.TextArea rows={3} placeholder="Ex: Diabetes, Hipertensão" />
           </Form.Item>
 
           <Form.Item label="Número de Série do Sensor">
-            <Input value={serialNumber} readOnly className="bg-gray-100" />
+            <Input
+              name="numeroDeSerie"
+              value={serialNumber}
+              disabled
+              readOnly
+              className="!text-black"
+            />
           </Form.Item>
 
           <Button
