@@ -1,7 +1,7 @@
-// eslint-disable-next-line no-restricted-imports
+import { ProtectedRoute } from "modules/auth/application/ProtectedRoute";
 import { createBrowserRouter, ScrollRestoration } from "react-router-dom";
-
 import { Layout } from "shared/Layout";
+
 export const router = createBrowserRouter([
   {
     element: (
@@ -11,13 +11,10 @@ export const router = createBrowserRouter([
       </>
     ),
     children: [
+      // Rotas públicas
       {
         path: "/",
         lazy: () => import("./PaginaInicial"),
-      },
-      {
-        path: "/dashboard",
-        lazy: () => import("./Dashboard"),
       },
       {
         path: "/entrar",
@@ -26,34 +23,6 @@ export const router = createBrowserRouter([
       {
         path: "/registrar",
         lazy: () => import("./SignUp"),
-      },
-      {
-        path: "/sensor",
-        lazy: () => import("./Sensor"),
-      },
-      {
-        path: "/configuracoes/emparelhar-com-a-internet",
-        lazy: () => import("./Configuracoes/EmparelharComInternet"),
-      },
-      {
-        path: "/configuracoes/cadastrar-idoso",
-        lazy: () => import("./Configuracoes/CadastrarIdoso"),
-      },
-      {
-        path: "/configuracoes/sensibilidade",
-        lazy: () => import("./Configuracoes/Sensibilidade"),
-      },
-      {
-        path: "/configuracoes/dados-pessoais",
-        lazy: () => import("./Configuracoes/DadosPessoais"),
-      },
-      {
-        path: "/informacoes/historico-de-acidentes",
-        lazy: () => import("./Informacoes/HistoricoDeAcidentes"),
-      },
-      {
-        path: "/informacoes/alarmes-e-notificacoes",
-        lazy: () => import("./Informacoes/AlarmeENotificacoes"),
       },
       {
         path: "/inspiracao",
@@ -70,6 +39,36 @@ export const router = createBrowserRouter([
       {
         path: "/suporte",
         lazy: () => import("./Suporte"),
+      },
+      // Rotas protegidas
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/dashboard",
+            lazy: () => import("./Dashboard"),
+          },
+          {
+            path: "/sensor",
+            lazy: () => import("./Sensor"),
+          },
+          {
+            path: "/configuracoes/sensibilidade",
+            lazy: () => import("./Configuracoes/Sensibilidade"),
+          },
+          {
+            path: "/configuracoes/dados-pessoais",
+            lazy: () => import("./Configuracoes/DadosPessoais"),
+          },
+          {
+            path: "/informacoes/historico-de-acidentes",
+            lazy: () => import("./Informacoes/HistoricoDeAcidentes"),
+          },
+          {
+            path: "/cadastro-do-sensor",
+            lazy: () => import("./CadastrarSensor"),
+          },
+        ],
       },
     ],
   },

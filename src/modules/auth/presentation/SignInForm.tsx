@@ -13,12 +13,13 @@ import {
 } from "@chakra-ui/react";
 import { useSecondaryTextColor } from "theme";
 
+import { toast } from "react-toastify";
+
 import { t } from "utils";
 
 import { TextInput } from "shared/Form";
 
 import { useAuthStore } from "../application";
-import { useSignInNotifications } from "./useSignInNotifications";
 
 export const SignInForm = () => {
   const secondaryColor = useSecondaryTextColor();
@@ -28,7 +29,6 @@ export const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [markAllTouched, setMarkallTouched] = useState(false);
 
-  const [notifySuccess, notifyFailure] = useSignInNotifications();
   const login = useAuthStore((store) => store.login);
 
   return (
@@ -64,8 +64,12 @@ export const SignInForm = () => {
             }
 
             login({ email, password })
-              .then(() => notifySuccess())
-              .catch(() => notifyFailure());
+              .then(() => toast.success("Entrou com sucesso!"))
+              .catch(() =>
+                toast.error(
+                  "Não foi possível entrar. Por favor tente novamente ou entre em contato."
+                )
+              );
           }}
         >
           <TextInput
