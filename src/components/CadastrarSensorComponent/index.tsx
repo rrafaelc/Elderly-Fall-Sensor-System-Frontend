@@ -9,7 +9,7 @@ import { CadastrarSensor } from "./CadastrarSensor";
 import { CadastrarIdoso } from "./CadastrarIdoso";
 
 export const CadastrarSensorComponent = () => {
-  const { currentStep, loading, setTotalItems, increaseStep, decreaseStep, resetSteps } =
+  const { currentStep, loading, setTotalItems, setFinished, setSensorName, resetSteps } =
     useCadastrarSensor();
 
   const steps = [
@@ -37,7 +37,9 @@ export const CadastrarSensorComponent = () => {
     setTotalItems(steps.length);
 
     return () => {
-      resetSteps()
+      resetSteps();
+      setFinished(false);
+      setSensorName("");
     }
   }, []);
 
