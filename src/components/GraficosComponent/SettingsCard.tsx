@@ -36,7 +36,7 @@ const SettingsCard = () => {
     <Card maxW="600px" w="100%" borderWidth="1px" borderRadius="lg" boxShadow="md" padding="4" border="1px solid #ddd">
       <CardHeader>
         <Flex justify="space-between" align="center">
-          <Heading size="md">Informações do Idoso</Heading>
+          <Heading size="sm">Informações do Dispositivo</Heading>
           <HStack spacing="4">
             <VStack spacing="0" align="center">
               <Switch colorScheme="teal" isChecked={isOn} onChange={handleToggle} size="sm" />
@@ -54,6 +54,7 @@ const SettingsCard = () => {
       </CardHeader>
 
       <CardBody>
+      <Heading size="sm">Dados do Idoso</Heading><br></br>
         <Flex>
           <List spacing={1} fontSize="sm" flex="1">
             <ListItem>
