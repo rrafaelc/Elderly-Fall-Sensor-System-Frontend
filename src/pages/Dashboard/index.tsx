@@ -1,11 +1,10 @@
 import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
-import ChartComponent from './PieChart';
-import UserTable from './UserTable';
-import SettingsCard from "./SettingsCard";
 import { Flex, Box } from "@chakra-ui/react";
-import LineChart from './LineChart';
-
+import LineChart from '../../components/GraficosComponent/LineChart';
+import ChartComponent from '../../components/GraficosComponent/PieChart';
+import UserTable from '../../components/GraficosComponent/UserTable';
+import SettingsCard from "../../components/GraficosComponent/SettingsCard";
 const DashboardPage = () => {
   return (
     <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
