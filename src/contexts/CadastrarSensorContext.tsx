@@ -6,10 +6,12 @@ interface CadastrarSensorContextType {
   loading: boolean;
   serialNumber: string;
   finished: boolean;
+  sensorName: string;
   setSerialNumber: (serial: string) => void;
   setTotalItems: (total: number) => void;
   setLoading:(isLoading: boolean) => void;
   setFinished:(isFinished: boolean) => void;
+  setSensorName:(name: string) => void;
   increaseStep: () => void;
   decreaseStep: () => void;
   resetSteps: () => void;
@@ -30,6 +32,7 @@ export const CadastrarSensorProvider: React.FC<
   const [totalItems, settotalItems] = useState<number>(0);
   const [loading, setloading] = useState<boolean>(false);
   const [serialNumber, setserialNumber] = useState<string>("");
+  const [sensorName, setsensorName] = useState<string>("");
   const [finished, setisFinished] = useState<boolean>(false);
 
   const setTotalItems = (total: number) => {
@@ -47,6 +50,10 @@ export const CadastrarSensorProvider: React.FC<
   const setFinished = (isFinished: boolean) => {
     setisFinished(isFinished);
   };
+
+  const setSensorName = (name: string) => {
+    setsensorName(name);
+  }
 
   const increaseStep = () => {
     if (currentStep + 1 > totalItems) return;
@@ -72,10 +79,12 @@ export const CadastrarSensorProvider: React.FC<
         loading,
         serialNumber,
         finished,
+        sensorName,
         setFinished,
         setSerialNumber,
         setTotalItems,
         setLoading,
+        setSensorName,
         increaseStep,
         decreaseStep,
         resetSteps,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button, Input, Typography, Card } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 import { toast } from "react-toastify";
@@ -8,37 +8,61 @@ const { Title, Text } = Typography;
 
 export const CadastrarSensor = () => {
   const host = import.meta.env.VITE_API_HOST;
-  const { loading, serialNumber, setSerialNumber, setLoading, increaseStep, decreaseStep } =
-    useCadastrarSensor();
+  const {
+    loading,
+    serialNumber,
+    sensorName,
+    setSensorName,
+    setSerialNumber,
+    setLoading,
+    increaseStep,
+    decreaseStep,
+  } = useCadastrarSensor();
   const token = localStorage.getItem("token");
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
   const handleSubmit = async () => {
-    if (!serialNumber) {
+    if (!serialNumber.trim()) {
       toast.warning("Por favor, insira o número de série.");
+      return;
+    }
+
+    if (!sensorName.trim()) {
+      toast.warning("Por favor, insira o nome do sensor.");
       return;
     }
 
     setLoading(true);
 
-    const toastId = toast.loading("Cadastrando o sensor...");
+    const toastId = toast.loading("Verificando o número de série...");
 
     try {
       const bodyFormData = new FormData();
-      bodyFormData.append('serial_number', serialNumber);
+      bodyFormData.append("serial_number", serialNumber);
 
-      const response = await axios.post(`${host}/v1/serial`, bodyFormData, config);
+      const response = await axios.post(
+        `${host}/v1/serial`,
+        bodyFormData,
+        config
+      );
       if (response.status >= 200 && response.status < 300) {
         toast.update(toastId, {
-          render: "Sensor cadastrado com sucesso",
+          render: "Sensor pronto para o cadastro!",
           type: "success",
           isLoading: false,
           autoClose: 5000,
         });
 
         increaseStep();
+      } else if (response.status >= 400 && response.status < 500) {
+        toast.update(toastId, {
+          render: "Não existe um sensor com esse número de série.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
       } else {
         toast.update(toastId, {
           render: "Erro ao cadastrar o sensor.",
@@ -61,7 +85,7 @@ export const CadastrarSensor = () => {
 
   useEffect(() => {
     setSerialNumber("");
-  }, [])
+  }, []);
 
   return (
     <div className="flex items-center justify-center py-2">
@@ -78,6 +102,19 @@ export const CadastrarSensor = () => {
           onChange={(e) => setSerialNumber(e.target.value)}
           className="mb-4"
         />
+
+        <Text className="mb-2">
+          Por favor, insira o nome do sensor:
+        </Text>
+        <Input
+          placeholder="Nome do sensor"
+          value={sensorName}
+          onChange={(e) => setSensorName(e.target.value)}
+          className="mb-4"
+          maxLength={50}
+          showCount
+        />
+
         <div className="flex justify-center gap-4">
           <Button
             type="default"

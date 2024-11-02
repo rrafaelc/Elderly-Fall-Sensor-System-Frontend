@@ -1,4 +1,4 @@
-import { Button, Input, Typography, Card, Select, Form } from "antd";
+import { Button, Input, Typography, Card, Select, Form, InputNumber } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -21,8 +21,14 @@ registerLocale("pt-BR", ptBR);
 export const CadastrarIdoso = () => {
   const host = import.meta.env.VITE_API_HOST;
   const navigate = useNavigate();
-  const { loading, serialNumber, setFinished, setLoading, decreaseStep } =
-    useCadastrarSensor();
+  const {
+    loading,
+    serialNumber,
+    sensorName,
+    setFinished,
+    setLoading,
+    decreaseStep,
+  } = useCadastrarSensor();
   const [birthDate, setBirthDate] = useState<Date | null>(null);
 
   const token = localStorage.getItem("token");
@@ -40,6 +46,12 @@ export const CadastrarIdoso = () => {
     tipoSanguineo,
     altura,
     peso,
+    cep,
+    estado,
+    cidade,
+    bairro,
+    rua,
+    numero,
     condicoesPreExistentes,
   }: Idoso) => {
     const cleanCpf = cpf.replace(/[^\d]/g, "");
@@ -53,31 +65,44 @@ export const CadastrarIdoso = () => {
 
     const toastId = toast.loading("Cadastrando o idoso...");
 
-    const bodyFormData = new FormData();
-    bodyFormData.append("user_id", user.id.toString());
-    bodyFormData.append("name", nomeCompleto);
-    bodyFormData.append("rg", rg);
-    bodyFormData.append("cpf", cleanCpf);
-    bodyFormData.append("dataNasc", dataNasc);
-    bodyFormData.append("tipoSanguineo", tipoSanguineo);
-    bodyFormData.append("altura", altura.toString());
-    bodyFormData.append("peso", peso.toString());
-    bodyFormData.append("condicoesPreExistentes", condicoesPreExistentes);
-    bodyFormData.append("whatsapp_number", "1");
-    bodyFormData.append("email", "temp");
-    bodyFormData.append("address", "temp");
+    const idosoFormData = new FormData();
+    const sensorFormData = new FormData();
+
+    idosoFormData.append("user_id", user.id.toString());
+    idosoFormData.append("name", nomeCompleto);
+    idosoFormData.append("rg", rg);
+    idosoFormData.append("cpf", cleanCpf);
+    idosoFormData.append("date_of_birth", dataNasc);
+    idosoFormData.append("blood_type", tipoSanguineo);
+    idosoFormData.append("altura", altura.toString());
+    idosoFormData.append("peso", peso.toString());
+    idosoFormData.append("zip_code", cep);
+    idosoFormData.append("state", estado);
+    idosoFormData.append("neighborhood", bairro);
+    idosoFormData.append("city", cidade);
+    idosoFormData.append("street", rua);
+    idosoFormData.append("street_number", numero.toString());
+    idosoFormData.append("condicoesPreExistentes", condicoesPreExistentes);
+    idosoFormData.append("whatsapp_number", "1");
+    idosoFormData.append("email", "temp");
+    idosoFormData.append("address", "temp");
+
+    sensorFormData.append("user_id", user.id.toString());
+    sensorFormData.append("name", sensorName);
+    sensorFormData.append("serial_number", serialNumber);
+    sensorFormData.append("whatsapp_number", "1");
 
     try {
       const response = await axios.post(
         `${host}/v1/person`,
-        bodyFormData,
+        idosoFormData,
         config
       );
 
       if (response.status >= 200 && response.status < 300) {
         const response = await axios.post(
           `${host}/v1/devicecreate`,
-          bodyFormData,
+          sensorFormData,
           config
         );
 
@@ -92,7 +117,7 @@ export const CadastrarIdoso = () => {
           setFinished(true);
           setTimeout(() => {
             navigate("/dashboard");
-          }, 1000)
+          }, 1000);
         } else {
           toast.update(toastId, {
             render: "Erro ao cadastrar o idoso.",
@@ -129,14 +154,27 @@ export const CadastrarIdoso = () => {
         </Title>
 
         <Form layout="vertical" onFinish={handleSubmit}>
+          <Form.Item label="Número de Série do Sensor">
+            <Input
+              name="numeroDeSerie"
+              value={serialNumber}
+              disabled
+              readOnly
+              className="!text-black"
+            />
+          </Form.Item>
+
           <Form.Item
             label="Nome Completo"
             name="nomeCompleto"
             rules={[
-              { required: true, message: "Por favor, insira o nome completo." },
+              {
+                required: true,
+                message: "Por favor, insira o nome completo.",
+              },
             ]}
           >
-            <Input placeholder="Nome Completo" />
+            <Input placeholder="Nome Completo" maxLength={50} showCount />
           </Form.Item>
 
           <Form.Item
@@ -224,21 +262,94 @@ export const CadastrarIdoso = () => {
           </Form.Item>
 
           <Form.Item
+            label="CEP"
+            name="cep"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, insira o cep.",
+              },
+            ]}
+          >
+            <PatternFormat
+              format="#####-###"
+              allowEmptyFormatting
+              mask="_"
+              customInput={Input}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Estado"
+            name="estado"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, insira a sigla do estado.",
+              },
+            ]}
+          >
+            <Input placeholder="SP" maxLength={2} showCount />
+          </Form.Item>
+
+          <Form.Item
+            label="Cidade"
+            name="cidade"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, insira a cidade.",
+              },
+            ]}
+          >
+            <Input placeholder="Itapira" />
+          </Form.Item>
+
+          <Form.Item
+            label="Bairro"
+            name="bairro"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, insira o bairro.",
+              },
+            ]}
+          >
+            <Input placeholder="Centro" />
+          </Form.Item>
+
+          <Form.Item
+            label="Rua"
+            name="rua"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, insira o nome da rua.",
+              },
+            ]}
+          >
+            <Input placeholder="Rua" maxLength={50} showCount />
+          </Form.Item>
+
+          <Form.Item
+            label="Número"
+            name="numero"
+            rules={[
+              {
+                required: true,
+                message: "Por favor, insira o número.",
+              },
+            ]}
+          >
+            <InputNumber placeholder="123" min={0} />
+          </Form.Item>
+
+          <Form.Item
             label="Condições Preexistentes"
             name="condicoesPreExistentes"
             rules={[{ required: false }]}
           >
             <Input.TextArea rows={3} placeholder="Ex: Diabetes, Hipertensão" />
-          </Form.Item>
-
-          <Form.Item label="Número de Série do Sensor">
-            <Input
-              name="numeroDeSerie"
-              value={serialNumber}
-              disabled
-              readOnly
-              className="!text-black"
-            />
           </Form.Item>
 
           <Button

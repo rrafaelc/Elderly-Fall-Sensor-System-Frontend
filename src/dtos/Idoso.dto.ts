@@ -7,5 +7,10 @@ export interface Idoso {
   altura: number;
   peso: number;
   condicoesPreExistentes: string;
-  numeroDeSerie: string;
+  cep: string;
+  estado: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  numero: number;
 }
