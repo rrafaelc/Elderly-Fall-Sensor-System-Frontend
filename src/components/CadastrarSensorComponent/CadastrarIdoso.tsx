@@ -9,7 +9,7 @@ import {
 } from "antd";
 import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 import { Id, toast } from "react-toastify";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { PatternFormat } from "react-number-format";
 
 import { LinkOutlined } from "@ant-design/icons";
@@ -45,12 +45,14 @@ export const CadastrarIdoso = () => {
   } = useCadastrarSensor();
   const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [cep, setCep] = useState("");
-  const [viaCep, setViaCep] = useState<ViaCepDto | null>(null);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user")!) as IUser;
+
+  // ISO 8601 (`YYYY-MM-DD`)
+  const formattedDate = birthDate ? birthDate.toISOString().split("T")[0] : "";
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
@@ -66,7 +68,7 @@ export const CadastrarIdoso = () => {
 
     if (newCep.replace(/[^\d]/g, "").length === 8) {
       setLoading(true);
-      const toastId = toast.loading("Buscando o CEP...");
+      const toastId = toast.loading("Buscando o endereço...");
       timeoutRef.current = setTimeout(() => {
         buscarCep(newCep, toastId);
       }, 3000);
@@ -92,14 +94,14 @@ export const CadastrarIdoso = () => {
 
       if (response.data) {
         toast.update(toastId, {
-          render: "Cep preenchido com sucesso!",
+          render: "Endereço preenchido com sucesso!",
           type: "success",
           isLoading: false,
           autoClose: 5000,
         });
 
         const viaCepData = response.data;
-        setViaCep(viaCepData);
+
         form.setFieldsValue({
           estado: viaCepData.uf,
           cidade: viaCepData.localidade,
@@ -109,7 +111,7 @@ export const CadastrarIdoso = () => {
       }
     } catch (error) {
       toast.update(toastId, {
-        render: "Erro ao buscar o CEP.",
+        render: "Erro ao buscar o endereço.",
         type: "error",
         isLoading: false,
         autoClose: 5000,
@@ -123,7 +125,6 @@ export const CadastrarIdoso = () => {
     nomeCompleto,
     rg,
     cpf,
-    dataNasc,
     tipoSanguineo,
     altura,
     peso,
@@ -159,7 +160,7 @@ export const CadastrarIdoso = () => {
     idosoFormData.append("name", nomeCompleto);
     idosoFormData.append("rg", rg);
     idosoFormData.append("cpf", cleanCpf);
-    idosoFormData.append("date_of_birth", dataNasc);
+    idosoFormData.append("date_of_birth", formattedDate);
     idosoFormData.append("blood_type", tipoSanguineo);
     idosoFormData.append("altura", altura.toString());
     idosoFormData.append("peso", peso.toString());
@@ -170,9 +171,6 @@ export const CadastrarIdoso = () => {
     idosoFormData.append("street", rua);
     idosoFormData.append("street_number", numero.toString());
     idosoFormData.append("conditions", condicoesPreExistentes ?? null);
-    idosoFormData.append("whatsapp_number", "1");
-    idosoFormData.append("email", "temp");
-    idosoFormData.append("address", "temp");
 
     sensorFormData.append("user_id", user.id.toString());
     sensorFormData.append("name", sensorName);
@@ -222,12 +220,35 @@ export const CadastrarIdoso = () => {
         });
       }
     } catch (error) {
-      toast.update(toastId, {
-        render: "Erro ao se conectar ao servidor.",
-        type: "error",
-        isLoading: false,
-        autoClose: 5000,
-      });
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message: string | null }>;
+
+        if (
+          axiosError.response &&
+          axiosError.response.status >= 400 &&
+          axiosError.response.status < 500
+        ) {
+          toast.update(toastId, {
+            render: (
+              <div>
+                Bad Request
+                <br />
+                {axiosError.response.data?.message}
+              </div>
+            ),
+            type: "warning",
+            isLoading: false,
+            autoClose: 5000,
+          });
+        }
+      } else {
+        toast.update(toastId, {
+          render: "Erro do servidor.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -382,10 +403,7 @@ export const CadastrarIdoso = () => {
               },
             ]}
           >
-            <Input
-              placeholder="SP"
-              disabled
-            />
+            <Input placeholder="SP" disabled />
           </Form.Item>
 
           <Form.Item
@@ -424,12 +442,7 @@ export const CadastrarIdoso = () => {
               },
             ]}
           >
-            <Input
-              placeholder="Rua"
-              maxLength={50}
-              showCount
-              disabled
-            />
+            <Input placeholder="Rua" maxLength={50} showCount disabled />
           </Form.Item>
 
           <Form.Item

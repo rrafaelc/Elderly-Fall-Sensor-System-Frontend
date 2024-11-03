@@ -5,7 +5,7 @@ import { useCadastrarSensor } from "contexts/CadastrarSensorContext";
 const { Title, Text } = Typography;
 
 export const EmparelharSensor = () => {
-  const { increaseStep } = useCadastrarSensor();
+  const { increaseStep, loading } = useCadastrarSensor();
 
   return (
     <div className="flex items-center justify-center py-2">
@@ -48,6 +48,7 @@ export const EmparelharSensor = () => {
           <Button
             type="primary"
             className="bg-blue-500 hover:bg-blue-600"
+            disabled={loading}
             onClick={() => increaseStep()}
           >
             Próximo passo
