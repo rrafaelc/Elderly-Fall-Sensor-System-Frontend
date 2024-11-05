@@ -1,7 +1,8 @@
 import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
-import { Image , Box,Text,HStack,Flex } from "@chakra-ui/react";
+import { Image , Box,Text,HStack,Divider, VStack,Flex} from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { BoxMainPage } from "components/MainPageComponent/BoxMainPage";
 
 
 const PaginaInicialPage = () => {
@@ -52,23 +53,7 @@ const PaginaInicialPage = () => {
           />
         </HStack>
 
-      <Box bg="gray.100" p="4" borderRadius="md">
-        <Text fontSize="lg" color="gray.700" fontWeight="bold">
-          Funcionalidades Principais
-        </Text>
-        <Text fontSize="md" mt="7">
-          • Detecção de Quedas
-          Sensores de movimento e impacto detectam quedas em tempo real, acionando alertas automáticos.
-        </Text>
-        <Text fontSize="md" mt="7">
-          • Botão SOS
-          Disponível para acionamento manual em caso de necessidade urgente, proporcionando uma camada extra de segurança.
-        </Text>
-        <Text fontSize="md" mt="7">
-          • Temporizador Inteligente
-          Evita alarmes falsos, aumentando a precisão dos alertas e melhorando a eficiência do sistema.
-        </Text>
-      </Box>
+        <BoxMainPage/>
 
     </Page>
   );
