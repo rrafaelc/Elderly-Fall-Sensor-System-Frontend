@@ -3,7 +3,7 @@ import { ErrorPageStrategy } from "shared/Result";
 import { Flex, Box } from "@chakra-ui/react";
 import LineChart from '../../components/GraficosComponent/LineChart';
 import ChartComponent from '../../components/GraficosComponent/PieChart';
-import UserTable from '../../components/GraficosComponent/UserTable';
+import UserTable from '../../components/GraficosComponent/Sensor_dataTable';
 import SettingsCard from "../../components/GraficosComponent/SettingsCard";
 const DashboardPage = () => {
   return (
