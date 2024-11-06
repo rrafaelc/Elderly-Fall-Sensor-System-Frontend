@@ -1,30 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ApexCharts from 'apexcharts';
 import { Box } from '@chakra-ui/react';
+import axios from 'axios';
 
-interface TrendData {
-  id: number;
-  name: string;
+interface SensorData {
+  updated_at: string; // Usar updated_at como timestamp
+  ax: number;
+  ay: number;
+  az: number;
+  gx: number;
+  gy: number;
+  gz: number;
 }
 
-const LineChart = () => {
+const LineChartComponent = () => {
   const host = import.meta.env.VITE_API_HOST;
-  const [data, setData] = useState<number[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [sensorData, setSensorData] = useState<SensorData[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Função para buscar dados do backend
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/user`);
-        const result: TrendData[] = await response.json();
-
-        // Define os dados para o gráfico
-        const chartData = result.map(user => user.id);
-        const chartCategories = result.map(user => user.name);
-        setData(chartData);
-        setCategories(chartCategories);
+        const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
+        setSensorData(response.data);
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
       }
@@ -34,63 +37,102 @@ const LineChart = () => {
   }, []);
 
   useEffect(() => {
-    if (data.length > 0 && categories.length > 0) {
-      // Configuração do gráfico
+    if (sensorData.length > 0) {
+      const timestamps = sensorData.map(item => new Date(item.updated_at).toISOString().slice(11, 19)); // Formato HH:MM:SS
+
+      const series = [
+        {
+          name: 'ax',
+          data: sensorData.map(item => item.ax),
+        },
+        {
+          name: 'ay',
+          data: sensorData.map(item => item.ay),
+        },
+        {
+          name: 'az',
+          data: sensorData.map(item => item.az),
+        },
+        {
+          name: 'gx',
+          data: sensorData.map(item => item.gx),
+        },
+        {
+          name: 'gy',
+          data: sensorData.map(item => item.gy),
+        },
+        {
+          name: 'gz',
+          data: sensorData.map(item => item.gz),
+        },
+      ];
+
       const options = {
-        series: [
-          {
-            name: 'Desktops',
-            data: data,
-          },
-        ],
         chart: {
           type: 'line',
           height: 350,
           zoom: {
-            enabled: false,
+            enabled: true,
           },
-        },
-        dataLabels: {
-          enabled: false,
-        },
-        stroke: {
-          curve: 'straight',
         },
         title: {
-          text: 'Quedas em tempo real',
+          text: 'Dados de Sensores (Aceleração e Giroscópio)',
           align: 'left',
         },
-        grid: {
-          row: {
-            colors: ['#f3f3f3', 'transparent'],
-            opacity: 0.5,
+        xaxis: {
+          categories: timestamps,
+          title: {
+            text: 'Tempo',
           },
         },
-        xaxis: {
-          categories: categories,
+        yaxis: {
+          title: {
+            text: 'Valores dos Sensores',
+          },
         },
+        series: series,
+        legend: {
+          position: 'top',
+          horizontalAlign: 'center',
+        },
+        colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0', '#FF66C3'],
+        tooltip: {
+          shared: true,
+          intersect: false,
+        },
+        responsive: [
+          {
+            breakpoint: 480,
+            options: {
+              chart: {
+                width: '100%',
+              },
+              legend: {
+                position: 'bottom',
+              },
+            },
+          },
+        ],
       };
 
-      // Cria ou atualiza o gráfico
       const chart = new ApexCharts(chartRef.current, options);
       chart.render();
 
-      // Limpeza ao desmontar para evitar vazamentos de memória
       return () => {
         chart.destroy();
       };
     }
-  }, [data, categories]);
+  }, [sensorData]);
 
   return (
     <Box
       border="1px solid #ddd"
-      borderRadius="8px"
-      boxShadow="0 4px 8px rgba(0, 0, 0, 0.1)"
+      borderRadius="lg"
+      boxShadow="md"
       bg="white"
-      width={["100%", "70%", "50%", "100%"]}
-      maxWidth="600px"
-      height={["327px", "400px", "327px"]}
+      width={["100%", "70%", "50%", "600px"]}
+      maxWidth="800px"
+      height={["400px", "400px", "500px"]}
       padding="4"
       display="flex"
       justifyContent="center"
@@ -102,4 +144,4 @@ const LineChart = () => {
   );
 };
 
-export default LineChart;
+export default LineChartComponent;

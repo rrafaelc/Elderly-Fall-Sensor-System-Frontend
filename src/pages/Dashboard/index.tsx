@@ -3,7 +3,7 @@ import { ErrorPageStrategy } from "shared/Result";
 import { Flex, Box } from "@chakra-ui/react";
 import LineChart from '../../components/GraficosComponent/LineChart';
 import ChartComponent from '../../components/GraficosComponent/PieChart';
-import UserTable from '../../components/GraficosComponent/Sensor_dataTable';
+import { Sensor_dataTable } from '../../components/GraficosComponent/Sensor_dataTable';
 import SettingsCard from "../../components/GraficosComponent/SettingsCard";
 const DashboardPage = () => {
   return (
@@ -12,21 +12,18 @@ const DashboardPage = () => {
         direction={{ base: "column", md: "row" }}
         wrap="wrap"
         gap="8"
-        justify="space-between"
+        justify="center"
         align="flex-start"
       >
         <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" mb={["4", "0"]}>
-          <SettingsCard />
-        </Box>
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" mb={["4", "0"]}>
           <ChartComponent />
         </Box>
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%">
+        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" ml={{lg:"30"}}>
           <LineChart />
         </Box>
       </Flex>
       <Box mt="20" width="100%" display="flex" justifyContent="center">
-          <UserTable />
+          <Sensor_dataTable />
       </Box>
     </Page>
   );

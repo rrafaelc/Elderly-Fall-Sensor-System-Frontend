@@ -35,7 +35,7 @@ useEffect(() => {
   return (
     <Box
       width={["100%", "70%", "50%", "100%"]}
-      maxWidth="600px"
+      maxWidth={{base:"500px", md:"500px", lg:"1000px"}}
       height={["300px", "400px", "327px"]}
       padding="4"
       bg="white"
@@ -51,6 +51,7 @@ useEffect(() => {
       ) : (
         <TableContainer>
           <Table variant="striped" colorScheme="blue">
+          <caption className='font-bold'>Historico de Quedas</caption>
             <Thead>
               <Tr>
                 <Th>ID</Th>

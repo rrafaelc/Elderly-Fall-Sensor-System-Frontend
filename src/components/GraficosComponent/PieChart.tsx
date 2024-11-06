@@ -41,12 +41,16 @@ const ChartComponent = () => {
     if (fallCount > 0 || impactCount > 0) {
       const options = {
         chart: {
-          type: 'pie',
+          type: 'donut',
           width: '100%',
           height: '100%',
         },
         series: [fallCount, impactCount],
         labels: ['Quedas', 'Impactos'],
+        title: {
+          text: 'Quantidade de Quedas e Impactos',
+          align: 'left',
+        },
         responsive: [
           {
             breakpoint: 480,
@@ -77,7 +81,7 @@ const ChartComponent = () => {
       borderRadius="lg"
       boxShadow="md"
       bg="white"
-      width={["100%", "70%", "50%", "100%"]}
+      width={["100%", "70%", "50%", "400px"]}
       maxWidth="500px"
       height={["300px", "400px", "327px"]}
       padding="4"
