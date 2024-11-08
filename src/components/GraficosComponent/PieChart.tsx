@@ -1,31 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ApexCharts from 'apexcharts';
 import { Box } from '@chakra-ui/react';
+import axios from 'axios';
 
-interface User {
-  id: number;
-  name: string;
+interface SensorData {
+  is_fall: boolean;
+  is_impact: boolean;
 }
 
 const ChartComponent = () => {
   const host = import.meta.env.VITE_API_HOST;
-  const [data, setData] = useState<number[]>([]);
-  const [labels, setLabels] = useState<string[]>([]);
+  const [fallCount, setFallCount] = useState<number>(0);
+  const [impactCount, setImpactCount] = useState<number>(0);
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Função para buscar dados do backend
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/user`);
-        const result: User[] = await response.json();
+        const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
 
-        // Extrair dados e categorias usando map
-        const chartData = result.map(user => user.id);
-        const chartLabels = result.map(user => user.name);
+        const fallEvents = response.data.filter(item => item.is_fall).length;
+        const impactEvents = response.data.filter(item => item.is_impact).length;
 
-        setData(chartData);
-        setLabels(chartLabels);
+        setFallCount(fallEvents);
+        setImpactCount(impactEvents);
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
       }
@@ -35,16 +38,15 @@ const ChartComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (data.length > 0 && labels.length > 0) {
-      // Configuração do gráfico
+    if (fallCount > 0 || impactCount > 0) {
       const options = {
         chart: {
           type: 'pie',
           width: '100%',
           height: '100%',
         },
-        series: data,
-        labels: labels,
+        series: [fallCount, impactCount],
+        labels: ['Quedas', 'Impactos'],
         responsive: [
           {
             breakpoint: 480,
@@ -60,16 +62,14 @@ const ChartComponent = () => {
         ],
       };
 
-      // Criar ou atualizar o gráfico
       const chart = new ApexCharts(chartRef.current, options);
       chart.render();
 
-      // Limpeza ao desmontar para evitar vazamentos de memória
       return () => {
         chart.destroy();
       };
     }
-  }, [data, labels]);
+  }, [fallCount, impactCount]);
 
   return (
     <Box
