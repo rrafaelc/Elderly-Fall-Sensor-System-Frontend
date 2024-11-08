@@ -32,16 +32,16 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
       },
     ],
   },
-  {
-    label: "Informações",
-    children: [
-      {
-        label: "Histórico de acidentes",
-        subLabel: "Veja um dashboard com o histórico de acidentes registrado pelo sensor",
-        href: "/informacoes/historico-de-acidentes",
-      },
-    ],
-  },
+  // {
+  //   label: "Informações",
+  //   children: [
+  //     {
+  //       label: "Histórico de acidentes",
+  //       subLabel: "Veja um dashboard com o histórico de acidentes registrado pelo sensor",
+  //       href: "/informacoes/historico-de-acidentes",
+  //     },
+  //   ],
+  // },
   {
     label: "Suporte",
     href: "/suporte",
