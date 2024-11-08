@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Box } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Box, Heading } from '@chakra-ui/react';
 import axios from 'axios';
+import Title from 'antd/es/skeleton/Title';
 
 interface Sensor_Data {
   id: number;
   event_type: string;
-  is_fall: string;
-  is_impact: string;
+  is_fall: boolean;
+  is_impact: boolean;
 }
 export const Sensor_dataTable = () => {
   const host = import.meta.env.VITE_API_HOST;
@@ -49,9 +50,10 @@ useEffect(() => {
       {loading ? (
         <Spinner size="xl" color="blue.500" />
       ) : (
+        <Box>
+        <Heading fontSize="lg" textAlign="center" mb="4">Historico de Quedas</Heading>
         <TableContainer>
           <Table variant="striped" colorScheme="blue">
-          <caption className='font-bold'>Historico de Quedas</caption>
             <Thead>
               <Tr>
                 <Th>ID</Th>
@@ -74,6 +76,7 @@ useEffect(() => {
             </Tbody>
           </Table>
         </TableContainer>
+        </Box>
       )}
     </Box>
   );

@@ -3,15 +3,16 @@ import ApexCharts from 'apexcharts';
 import { Box, Spinner } from '@chakra-ui/react';
 import axios from 'axios';
 
+
 interface SensorData {
-  is_fall: boolean;
-  is_impact: boolean;
+  id: number;
+  event_type: string;
 }
 
-const ChartComponent = () => {
+const EventChartComponent = () => {
   const host = import.meta.env.VITE_API_HOST;
-  const [fallCount, setFallCount] = useState<number>(0);
-  const [impactCount, setImpactCount] = useState<number>(0);
+  const [data, setData] = useState<number[]>([]);
+  const [labels, setLabels] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -26,15 +27,20 @@ const ChartComponent = () => {
       try {
         const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
 
-        const fallEvents = response.data.filter(item => item.is_fall).length;
-        const impactEvents = response.data.filter(item => item.is_impact).length;
+        const eventCounts: { [key: string]: number } = {};
+        response.data.forEach(sqlsensor => {
+          eventCounts[sqlsensor.event_type] = (eventCounts[sqlsensor.event_type] || 0) + 1;
+        });
 
-        setFallCount(fallEvents);
-        setImpactCount(impactEvents);
-        setLoading(false); // Define como false após receber dados, mesmo que vazios
+        const chartLabels = Object.keys(eventCounts);
+        const chartData = Object.values(eventCounts);
+
+        setLabels(chartLabels);
+        setData(chartData);
+        setLoading(false);
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
-        setLoading(true);
+        setLoading(false);
       }
     };
 
@@ -49,10 +55,10 @@ const ChartComponent = () => {
           width: '100%',
           height: '100%',
         },
-        series: [fallCount, impactCount],
-        labels: ['Quedas', 'Impactos'],
+        series: data,
+        labels: labels,
         title: {
-          text: 'Quantidade de Quedas e Impactos',
+          text: 'Quantidade de Eventos',
           align: 'left',
         },
         responsive: [
@@ -77,7 +83,7 @@ const ChartComponent = () => {
         chart.destroy();
       };
     }
-  }, [fallCount, impactCount, loading]);
+  }, [data, labels, loading]);
 
   return (
     <Box
@@ -103,4 +109,4 @@ const ChartComponent = () => {
   );
 };
 
-export default ChartComponent;
+export default EventChartComponent;
