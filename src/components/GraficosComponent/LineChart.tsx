@@ -1,23 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ApexCharts from 'apexcharts';
+import React, { useEffect, useState } from 'react';
+import ReactApexChart from 'react-apexcharts';
 import { Box, Spinner } from '@chakra-ui/react';
 import axios from 'axios';
 
 interface SensorData {
-  updated_at: string;
-  ax: number;
-  ay: number;
-  az: number;
-  gx: number;
-  gy: number;
-  gz: number;
+  event_type: string;
+  is_fall: boolean;
+  is_impact: boolean;
 }
 
-const LineChartComponent = () => {
+const EventChartComponent = () => {
   const host = import.meta.env.VITE_API_HOST;
-  const [sensorData, setSensorData] = useState<SensorData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // Estado de carregamento
-  const chartRef = useRef<HTMLDivElement>(null);
+  const [seriesData, setSeriesData] = useState<any[]>([]);
+  const [labels, setLabels] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,91 +22,69 @@ const LineChartComponent = () => {
     };
 
     const fetchData = async () => {
-      setLoading(true); // Inicia o carregamento
+      setLoading(true);
       try {
         const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
-        setSensorData(response.data);
-        setLoading(false); // Define como false após o carregamento dos dados
+
+        const eventCounts: { [key: string]: { falls: number; impacts: number } } = {};
+        response.data.forEach((sensor) => {
+          if (!eventCounts[sensor.event_type]) {
+            eventCounts[sensor.event_type] = { falls: 0, impacts: 0 };
+          }
+          if (sensor.is_fall) eventCounts[sensor.event_type].falls++;
+          if (sensor.is_impact) eventCounts[sensor.event_type].impacts++;
+        });
+
+        const chartLabels = Object.keys(eventCounts);
+        const fallsData = chartLabels.map((label) => eventCounts[label].falls);
+        const impactsData = chartLabels.map((label) => eventCounts[label].impacts);
+
+        setLabels(chartLabels);
+        setSeriesData([
+          { name: 'Quedas', type: 'column', data: fallsData },
+          { name: 'Impactos', type: 'line', data: impactsData },
+        ]);
+        setLoading(false);
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
-        setLoading(false); // Define como false caso haja erro
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (!loading && sensorData.length > 0) {
-      const timestamps = sensorData.map(item => new Date(item.updated_at).toISOString().slice(11, 19));
-
-      const series = [
-        { name: 'AX', data: sensorData.map(item => item.ax) },
-        { name: 'AY', data: sensorData.map(item => item.ay) },
-        { name: 'AZ', data: sensorData.map(item => item.az) },
-        { name: 'GX', data: sensorData.map(item => item.gx) },
-        { name: 'GY', data: sensorData.map(item => item.gy) },
-        { name: 'GZ', data: sensorData.map(item => item.gz) },
-      ];
-
-      const options = {
-        chart: {
-          type: 'area',
-          height: 350,
-          zoom: {
-            enabled: true,
-          },
+  const chartOptions = {
+    chart: {
+      height: 350,
+      type: 'line' as const,
+    },
+    stroke: {
+      width: [0, 4],
+    },
+    colors: ['#FF5733', '#33FF57'],
+    title: {
+      text: 'Eventos de Quedas e Impactos',
+    },
+    dataLabels: {
+      enabled: true,
+      enabledOnSeries: [1],
+    },
+    labels: labels,
+    yaxis: [
+      {
+        title: {
+          text: 'Quedas',
         },
-        stroke: {
-          curve: 'smooth', // Configuração para spline
-          width: 2,
+      },
+      {
+        opposite: true,
+        title: {
+          text: 'Impactos',
         },
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shadeIntensity: 0.4,
-            opacityFrom: 0.5,
-            opacityTo: 0,
-            stops: [0, 90, 100],
-          },
-        },
-        markers: {
-          size: 4,
-          colors: ['#FF4560'],
-          strokeColors: '#fff',
-          strokeWidth: 2,
-          hover: { size: 6 },
-          discrete: sensorData.map((item, index) => ({
-            seriesIndex: 0,
-            dataPointIndex: index,
-            fillColor: item.ax > 10 ? '#FF4560' : '#00E396',
-          })),
-        },
-        title: { text: 'Monitoramento de Sensores (Aceleração e Giroscópio)', align: 'left' },
-        xaxis: { categories: timestamps, title: { text: 'Tempo' } },
-        yaxis: {
-          title: { text: 'Valores dos Sensores' },
-          min: (min: number) => min - 5,
-          max: (max: number) => max + 5,
-        },
-        series: series,
-        legend: { position: 'top', horizontalAlign: 'center' },
-        colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0', '#FF66C3'],
-        tooltip: {
-          shared: true,
-          intersect: false,
-          y: { formatter: (val: number) => `${val.toFixed(2)} unidades` },
-        },
-      };
-
-      const chart = new ApexCharts(chartRef.current, options);
-      chart.render();
-
-      return () => {
-        chart.destroy();
-      };
-    }
-  }, [sensorData, loading]);
+      },
+    ],
+  };
 
   return (
     <Box
@@ -118,9 +92,9 @@ const LineChartComponent = () => {
       borderRadius="lg"
       boxShadow="md"
       bg="white"
-      width={["100%", "70%", "50%", "600px"]}
-      maxWidth="800px"
-      height={["400px", "400px", "500px"]}
+      width={["100%", "70%", "50%", "400px"]}
+      maxWidth="500px"
+      height={["300px", "400px", "300px"]}
       padding="4"
       display="flex"
       justifyContent="center"
@@ -128,12 +102,12 @@ const LineChartComponent = () => {
       margin="auto"
     >
       {loading ? (
-        <Spinner size="xl" /> // Exibe o spinner enquanto está carregando
+        <Spinner size="xl" />
       ) : (
-        <div ref={chartRef} style={{ width: '100%', height: '100%' }} />
+        <ReactApexChart options={chartOptions} series={seriesData} type="line" height={350} />
       )}
     </Box>
   );
 };
 
-export default LineChartComponent;
+export default EventChartComponent;
