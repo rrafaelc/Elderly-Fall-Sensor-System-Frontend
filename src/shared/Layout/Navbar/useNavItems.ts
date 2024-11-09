@@ -17,21 +17,21 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
     label: "Meu sensor",
     href: '/sensor'
   },
-  {
-    label: "Configurações",
-    children: [
-      {
-        label: "Sensibilidade",
-        subLabel: "Ajuste a sensibilidade do sensor",
-        href: "/configuracoes/sensibilidade",
-      },
-      {
-        label: "Dados pessoais",
-        subLabel: "Atualizar seus dados de usuário",
-        href: "/configuracoes/dados-pessoais",
-      },
-    ],
-  },
+  // {
+  //   label: "Configurações",
+  //   children: [
+  //     {
+  //       label: "Sensibilidade",
+  //       subLabel: "Ajuste a sensibilidade do sensor",
+  //       href: "/configuracoes/sensibilidade",
+  //     },
+  //     {
+  //       label: "Dados pessoais",
+  //       subLabel: "Atualizar seus dados de usuário",
+  //       href: "/configuracoes/dados-pessoais",
+  //     },
+  //   ],
+  // },
   // {
   //   label: "Informações",
   //   children: [
@@ -42,10 +42,10 @@ export const NAV_ITEMS_AUTHENTICATED: Array<INavItem> = [
   //     },
   //   ],
   // },
-  {
-    label: "Suporte",
-    href: "/suporte",
-  },
+  // {
+  //   label: "Suporte",
+  //   href: "/suporte",
+  // },
 ];
 
 export const NAV_ITEMS_NOT_AUTHENTICATED: Array<INavItem> = [
@@ -53,14 +53,14 @@ export const NAV_ITEMS_NOT_AUTHENTICATED: Array<INavItem> = [
     label: "Página Inicial",
     href: '/'
   },
-  {
-    label: "Inspiração",
-    href: "/inspiracao"
-  },
-  {
-    label: "Benefícios",
-    href: "/beneficios",
-  },
+  // {
+  //   label: "Inspiração",
+  //   href: "/inspiracao"
+  // },
+  // {
+  //   label: "Benefícios",
+  //   href: "/beneficios",
+  // },
   {
     label: "Sobre",
     href: "/sobre",

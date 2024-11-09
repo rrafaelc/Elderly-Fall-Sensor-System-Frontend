@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import { Avatar, Card } from "antd";
+import { useState, useEffect } from "react";
+import { Avatar, Card, Typography } from "antd";
 import axios from "axios";
 import { IUser } from "modules/auth/types";
+import { PatternFormat } from "react-number-format";
+import { toast } from "react-toastify";
+
+const { Text } = Typography;
 
 interface SensorData {
   id: number;
@@ -42,7 +41,8 @@ export const SensorCard = () => {
 
         setSensorData(response.data);
       } catch (error) {
-        //
+        toast.error("Erro ao buscar os dados");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -51,33 +51,54 @@ export const SensorCard = () => {
     getSensorData();
   }, []);
 
-  const actions: React.ReactNode[] = [<EditOutlined key="edit" />];
-
   return (
     <div className="flex justify-center">
       <Card
         loading={loading}
-        actions={actions}
-        cover={
-          <img
-            alt="example"
-            src="images/modelosensor.png"
-          />
-        }
+        cover={<img alt="example" src="images/modelosensor.png" />}
         className="max-w-[300px]"
       >
         <Card.Meta
-          avatar={
-            <Avatar src="images/arduino-logo.png" />
-          }
-          title={sensorData?.name}
-          description={
-            <>
-              <p>NS: {sensorData?.serial_number}</p>
-              <p>Status: {sensorData?.status}</p>
-            </>
-          }
+          avatar={<Avatar src="images/arduino-logo.png" />}
+          title={sensorData?.name ?? 'Carregando...'}
         />
+        <div className="mt-4">
+          <div className="flex gap-1 flex-col">
+            <Text strong>Número de Série</Text>
+            {sensorData ? (
+              <Text ellipsis>{sensorData?.serial_number}</Text>
+            ) : (
+              <Text>Carregando...</Text>
+            )}
+          </div>
+          <div className="flex gap-1 flex-col">
+            <Text strong>Nome do contato</Text>
+            {sensorData ? (
+              <Text ellipsis>{user.name}</Text>
+            ) : (
+              <Text>Carregando...</Text>
+            )}
+          </div>
+          <div className="flex gap-1 flex-col">
+            <Text strong>WhatsApp</Text>
+            {sensorData ? (
+              <Text
+                copyable={{
+                  text: user.whatsapp_number.toString(),
+                  tooltips: ["Copiar", "Copiado!"],
+                }}
+              >
+                <PatternFormat
+                  format="(##) #####-####"
+                  value={user.whatsapp_number}
+                  displayType="text"
+                />
+              </Text>
+            ) : (
+              <Text>Carregando...</Text>
+            )}
+          </div>
+        </div>
       </Card>
     </div>
   );
