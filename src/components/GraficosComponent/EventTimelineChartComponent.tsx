@@ -48,7 +48,6 @@ const EventTimelineChartComponent = ({ filterEventType = null }) => {
     }
   };
 
-  // Opções do gráfico com ApexCharts
   useEffect(() => {
     if (!loading && chartRef.current) {
       const chartOptions = {
@@ -61,7 +60,7 @@ const EventTimelineChartComponent = ({ filterEventType = null }) => {
         plotOptions: {
           bar: {
             borderRadius: 4,
-            dataLabels: { position: 'top' }, // Exibe rótulos no topo das colunas
+            dataLabels: { position: 'top' },
           },
         },
         dataLabels: {
@@ -100,9 +99,9 @@ const EventTimelineChartComponent = ({ filterEventType = null }) => {
       borderRadius="lg"
       boxShadow="md"
       bg="white"
-      width={["100%", "70%", "50%", "700px"]}
+      width={["100%", "70%", "50%", "400px"]}
       maxWidth="500px"
-      height={["300px", "400px", "500px"]}
+      height={["300px", "400px", "400px"]}
       padding="4"
       display="flex"
       justifyContent="center"

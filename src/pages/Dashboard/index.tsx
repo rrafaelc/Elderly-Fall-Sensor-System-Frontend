@@ -7,6 +7,7 @@ import CardEvent from "components/GraficosComponent/CardEvent";
 import CardFall from "components/GraficosComponent/CardFall";
 import EventTimelineChartComponent from "components/GraficosComponent/EventTimelineChartComponent";
 import SensorDataTable from "components/GraficosComponent/Sensor_dataTable";
+import CardTimeline from "components/GraficosComponent/CardTimeline";
 
 const DashboardPage = () => {
   return (
@@ -23,6 +24,7 @@ const DashboardPage = () => {
         </Box>
 
         <Box>
+          <CardTimeline />
           <EventTimelineChartComponent />
         </Box>
       </SimpleGrid>
