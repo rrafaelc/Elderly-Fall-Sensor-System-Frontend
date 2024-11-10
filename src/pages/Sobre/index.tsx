@@ -27,7 +27,7 @@ const alunos = [
   {
     nome: "Rodrigo de Almeida Rodrigues",
     descricao: "Responsável pela documentação do projeto",
-    img: "images/sobre/rodrigo.jpg",
+    img: "images/sobre/rodrigo.jpeg",
   },
   {
     nome: "Taís Bueno Vidotto",
@@ -93,6 +93,7 @@ const SobrePage = () => {
                         width: "100%",
                         borderBottom: 'none'
                       }}
+                      className="max-h-[283px]"
                     />
                   }
                 >
