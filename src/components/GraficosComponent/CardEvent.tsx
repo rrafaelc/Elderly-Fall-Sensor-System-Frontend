@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Spinner, Text, SimpleGrid } from '@chakra-ui/react';
+import { Box, Spinner, Text, Flex } from '@chakra-ui/react';
 import axios from 'axios';
 
 interface SensorData {
@@ -38,13 +38,17 @@ const EventCardsComponent = () => {
 
     fetchData();
   }, []);
-
   return (
     <Box padding="4">
       {loading ? (
         <Spinner size="xl" />
       ) : (
-        <SimpleGrid columns={[1, 2, 3]} spacing="170">
+        <Flex
+          direction="row"
+          gap="4"
+          justify="center"
+
+        >
           {Object.entries(eventCounts).map(([eventType, count]) => (
             <Box
               key={eventType}
@@ -57,12 +61,13 @@ const EventCardsComponent = () => {
               justifyContent="center"
               alignItems="center"
               boxShadow="md"
+              ml={{base: "0", md: "1"}}
             >
               <Text fontSize="xl" color="white">{count}</Text>
               <Text fontSize="md" color="white">{eventType}</Text>
             </Box>
           ))}
-        </SimpleGrid>
+        </Flex>
       )}
     </Box>
   );

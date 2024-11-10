@@ -69,6 +69,7 @@ const CardComponent = () => {
             justifyContent="center"
             alignItems="center"
             boxShadow="md"
+            ml={{base: "4", md: "0"}}
           >
             <Text fontSize="xl" color="white">{sosCount}</Text>
             <Text fontSize="md" color="white">Impactos</Text>

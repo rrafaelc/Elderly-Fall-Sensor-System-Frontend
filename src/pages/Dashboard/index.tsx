@@ -1,6 +1,6 @@
 import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
-import { Flex, Box } from "@chakra-ui/react";
+import { SimpleGrid, Box } from "@chakra-ui/react";
 import ChartComponent from '../../components/GraficosComponent/PieChart';
 import { Sensor_dataTable } from '../../components/GraficosComponent/Sensor_dataTable';
 import EventChartComponent from "components/GraficosComponent/EventChart";
@@ -10,28 +10,22 @@ import CardFall from "components/GraficosComponent/CardFall";
 const DashboardPage = () => {
   return (
     <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
-      <Flex
-        direction={{ base: "column", md: "row" }}
-        wrap="wrap"
-        gap="8"
-        justify="space-between"
-        align="flex-start"
-      >
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" mb={["4", "0"]}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} mb={8}>
+        <Box>
           <CardFall />
           <ChartComponent />
         </Box>
 
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" mb={["4", "0"]}>
+        <Box>
           <CardEvent />
           <EventChartComponent />
         </Box>
-
-      </Flex>
+      </SimpleGrid>
 
       <Box mt="20" width="100%" display="flex" justifyContent="center">
         <Sensor_dataTable />
       </Box>
+
     </Page>
   );
 };
