@@ -45,7 +45,15 @@ export const IdosoDescricoes = () => {
 
         const idoso = response.data.find((idoso) => idoso.user_id == user.id);
 
-        setIdoso(idoso ? idoso : null);
+        setIdoso(
+          idoso
+            ? {
+                ...idoso,
+                conditions:
+                  idoso.conditions === "null" ? undefined : idoso.conditions,
+              }
+            : null
+        );
       } catch (error) {
         toast.error("Erro ao buscar os dados");
         console.error(error);
