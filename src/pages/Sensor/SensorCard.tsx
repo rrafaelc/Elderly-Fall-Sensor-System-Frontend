@@ -12,6 +12,7 @@ interface SensorData {
   name: string;
   status: number;
   serial_number: string;
+  timer: number;
   last_verification: string | null;
   created_at: string;
   updated_at: string;
@@ -37,12 +38,13 @@ export const SensorCard = () => {
     const getSensorData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
+        const response = await axios.get<SensorData>(
           `${host}/v1/device/user/${user.id}`,
           config
         );
 
         setSensorData(response.data);
+        setTimerValue(response.data.timer);
       } catch (error) {
         toast.error("Erro ao buscar os dados");
         console.error(error);
@@ -54,13 +56,26 @@ export const SensorCard = () => {
     getSensorData();
   }, []);
 
-  const handleSaveTimer = () => {
+  const handleSaveTimer = async () => {
     setLoadingTemporizador(true);
+    try {
+      if (!sensorData) throw new Error("Sensor não foi carregado!");
 
-    setTimeout(() => {
-      toast.success(`Temporizador configurado para ${timerValue} minutos.`);
+      await axios.patch<SensorData>(
+        `${host}/v1/device/${sensorData.id}`,
+        {
+          timer: timerValue,
+        },
+        config
+      );
+
+      toast.success('Temporizador atualizado com sucesso!');
+    } catch (error) {
+      toast.error("Erro ao atualizar o temporizador");
+      console.error(error);
+    } finally {
       setLoadingTemporizador(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -68,7 +83,7 @@ export const SensorCard = () => {
       <Card
         loading={loading}
         cover={<img alt="example" src="images/modelosensor.png" />}
-        className="max-w-[300px]"
+        className="min-w-[250px] max-w-[300px]"
       >
         <Card.Meta
           avatar={<Avatar src="images/arduino-logo.png" />}
