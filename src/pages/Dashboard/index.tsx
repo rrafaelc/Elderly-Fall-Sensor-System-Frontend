@@ -1,33 +1,38 @@
 import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
-import { Flex, Box } from "@chakra-ui/react";
-import LineChart from '../../components/GraficosComponent/LineChart';
+import { SimpleGrid, Box } from "@chakra-ui/react";
 import ChartComponent from '../../components/GraficosComponent/PieChart';
-import UserTable from '../../components/GraficosComponent/Sensor_dataTable';
-import SettingsCard from "../../components/GraficosComponent/SettingsCard";
+import EventChartComponent from "components/GraficosComponent/EventChart";
+import CardEvent from "components/GraficosComponent/CardEvent";
+import CardFall from "components/GraficosComponent/CardFall";
+import EventTimelineChartComponent from "components/GraficosComponent/EventTimelineChartComponent";
+import SensorDataTable from "components/GraficosComponent/Sensor_dataTable";
+import CardTimeline from "components/GraficosComponent/CardTimeline";
+
 const DashboardPage = () => {
   return (
     <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
-      <Flex
-        direction={{ base: "column", md: "row" }}
-        wrap="wrap"
-        gap="8"
-        justify="space-between"
-        align="flex-start"
-      >
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" mb={["4", "0"]}>
-          <SettingsCard />
-        </Box>
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%" mb={["4", "0"]}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} mb={8}>
+        <Box>
+          <CardFall />
           <ChartComponent />
         </Box>
-        <Box flex="1" maxW={{ base: "100%", md: "32%", lg: "30%" }} w="100%">
-          <LineChart />
+
+        <Box>
+          <CardEvent />
+          <EventChartComponent />
         </Box>
-      </Flex>
+
+        <Box>
+          <CardTimeline />
+          <EventTimelineChartComponent />
+        </Box>
+      </SimpleGrid>
+
       <Box mt="20" width="100%" display="flex" justifyContent="center">
-          <UserTable />
+        <SensorDataTable/>
       </Box>
+
     </Page>
   );
 };
