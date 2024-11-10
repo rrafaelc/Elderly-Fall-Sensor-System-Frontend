@@ -51,6 +51,7 @@ const ChartComponent = () => {
         },
         series: [fallCount, impactCount],
         labels: ['Quedas', 'Impactos'],
+        colors: ['#FF1654', '#247BA0'],
         title: {
           text: 'Quantidade de Quedas e Impactos',
           align: 'left',

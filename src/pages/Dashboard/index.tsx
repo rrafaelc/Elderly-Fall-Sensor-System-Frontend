@@ -2,10 +2,11 @@ import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
 import { SimpleGrid, Box } from "@chakra-ui/react";
 import ChartComponent from '../../components/GraficosComponent/PieChart';
-import { Sensor_dataTable } from '../../components/GraficosComponent/Sensor_dataTable';
 import EventChartComponent from "components/GraficosComponent/EventChart";
 import CardEvent from "components/GraficosComponent/CardEvent";
 import CardFall from "components/GraficosComponent/CardFall";
+import EventTimelineChartComponent from "components/GraficosComponent/EventTimelineChartComponent";
+import SensorDataTable from "components/GraficosComponent/Sensor_dataTable";
 
 const DashboardPage = () => {
   return (
@@ -20,10 +21,14 @@ const DashboardPage = () => {
           <CardEvent />
           <EventChartComponent />
         </Box>
+
+        <Box>
+          <EventTimelineChartComponent />
+        </Box>
       </SimpleGrid>
 
       <Box mt="20" width="100%" display="flex" justifyContent="center">
-        <Sensor_dataTable />
+        <SensorDataTable/>
       </Box>
 
     </Page>
