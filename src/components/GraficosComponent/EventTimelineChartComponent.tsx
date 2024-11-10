@@ -101,7 +101,7 @@ const EventTimelineChartComponent = ({ filterEventType = null }) => {
       bg="white"
       width={["100%", "70%", "50%", "400px"]}
       maxWidth="500px"
-      height={["300px", "400px", "400px"]}
+      height={["70%", "400px", "400px"]}
       padding="4"
       display="flex"
       justifyContent="center"
