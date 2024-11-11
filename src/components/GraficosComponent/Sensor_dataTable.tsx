@@ -1,43 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Box, Heading } from '@chakra-ui/react';
-import axios from 'axios';
-
-interface SensorData {
-  id: number;
-  event_type: string;
-  is_fall: boolean;
-  is_impact: boolean;
-  updated_at: string;
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Box,
+  Heading,
+} from "@chakra-ui/react";
+import { SensorData } from "pages/Dashboard";
+interface Props {
+  sensorData: SensorData[];
 }
 
-export const SensorDataTable = () => {
-  const host = import.meta.env.VITE_API_HOST;
-  const [sensor, setSensorName] = useState<SensorData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${host}/v1/sqlsensor`, config);
-        setSensorName(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar os dados:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Função para formatar o campo `updated_at` como uma data legível
+export const SensorDataTable = ({ sensorData }: Props) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    return date.toLocaleString("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
   };
+
+  const sortedSensorData = [...sensorData].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
 
   return (
     <Box
@@ -53,11 +41,11 @@ export const SensorDataTable = () => {
       margin="auto"
       border="1px solid #ddd"
     >
-      {loading ? (
-        <Spinner size="xl" color="blue.500" />
-      ) : (
+
         <Box>
-          <Heading fontSize="lg" textAlign="center" mb="4">Histórico de Quedas</Heading>
+          <Heading fontSize="lg" textAlign="center" mb="4">
+            Histórico de Quedas
+          </Heading>
           <TableContainer>
             <Table variant="striped" colorScheme="blue">
               <Thead>
@@ -70,20 +58,22 @@ export const SensorDataTable = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {sensor.map((sensorData) => (
-                  <Tr key={sensorData.id}>
-                    <Td>{sensorData.event_type}</Td>
-                    <Td>{sensorData.is_fall ? 'Sim' : 'Não'}</Td>
-                    <Td>{sensorData.is_impact ? 'Sim' : 'Não'}</Td>
+                {sortedSensorData.map((sensor) => (
+                  <Tr key={sensor.id}>
+                    <Td>
+                      {sensor.event_type === "queda" ? "Queda" : "Emergência"}
+                    </Td>
+                    <Td>{sensor.is_fall ? "Sim" : "Não"}</Td>
+                    <Td>{sensor.is_impact ? "Sim" : "Não"}</Td>
                     <Td>Enviado no Whatsapp</Td>
-                    <Td>{formatDate(sensorData.updated_at)}</Td>
+                    <Td>{formatDate(sensor.created_at)}</Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
           </TableContainer>
         </Box>
-      )}
+
     </Box>
   );
 };

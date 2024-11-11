@@ -1,84 +1,82 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ApexCharts from 'apexcharts';
-import { Box, Spinner } from '@chakra-ui/react';
-import axios from 'axios';
-
-interface SensorData {
-  id: number;
-  event_type: string;
-  updated_at: string;
+import { useEffect, useRef, useState } from "react";
+import ApexCharts from "apexcharts";
+import { Box } from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import { SensorData } from "pages/Dashboard";
+interface Props {
+  sensorData: SensorData[];
+  loading: boolean;
+  filterEventType?: null;
 }
 
-const EventTimelineChartComponent = ({ filterEventType = null }) => {
-  const host = import.meta.env.VITE_API_HOST;
+const EventTimelineChartComponent = ({
+  sensorData,
+  loading,
+  filterEventType = null,
+}: Props) => {
   const [data, setData] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(true);
   const chartRef = useRef(null);
 
-  // Função para buscar e processar os dados
-  const fetchData = async () => {
-    setLoading(true);
-    const token = localStorage.getItem('token');
-    const config = { headers: { Authorization: `Bearer ${token}` } };
+  useEffect(() => {
+    if (sensorData.length) {
+      try {
+        const eventsByMonth = sensorData.reduce(
+          (acc: { [key: string]: number }, event: SensorData) => {
+            const date = new Date(event.updated_at);
+            const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
 
-    try {
-      const response = await axios.get(`${host}/v1/sqlsensor`, config);
+            if (!filterEventType || event.event_type === filterEventType) {
+              acc[monthKey] = (acc[monthKey] || 0) + 1;
+            }
+            return acc;
+          },
+          {}
+        );
 
-      const eventsByMonth = response.data.reduce((acc: { [key: string]: number }, event: SensorData) => {
-        const date = new Date(event.updated_at);
-        const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+        const chartLabels = Object.keys(eventsByMonth).sort();
+        const chartData = chartLabels.map((month) => eventsByMonth[month]);
 
-        if (!filterEventType || event.event_type === filterEventType) {
-          acc[monthKey] = (acc[monthKey] || 0) + 1;
-        }
-        return acc;
-      }, {});
-
-      const chartLabels = Object.keys(eventsByMonth).sort();
-      const chartData = chartLabels.map(month => eventsByMonth[month]);
-
-      setLabels(chartLabels);
-      setData(chartData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Erro ao buscar os dados:', error);
-      setLoading(false);
+        setLabels(chartLabels);
+        setData(chartData);
+      } catch {
+        toast.error("Erro ao contar as quedas");
+      }
     }
-  };
+  }, [sensorData, loading]);
 
   useEffect(() => {
     if (!loading && chartRef.current) {
       const chartOptions = {
         chart: {
-          type: 'bar',
+          type: "bar",
           height: 350,
           toolbar: { show: true },
         },
-        series: [{ name: 'Quantidade de Eventos', data: data }],
+        series: [{ name: "Quantidade de Eventos", data: data }],
         plotOptions: {
           bar: {
             borderRadius: 4,
-            dataLabels: { position: 'top' },
+            dataLabels: { position: "top" },
           },
         },
         dataLabels: {
           enabled: true,
           formatter: (val: number) => val.toString(),
           offsetY: -20,
-          style: { fontSize: '12px', colors: ['#304758'] },
+          style: { fontSize: "12px", colors: ["#304758"] },
         },
         xaxis: {
           categories: labels,
-          title: { text: 'Meses' },
+          title: { text: "Meses" },
         },
         yaxis: {
-          title: { text: 'Quantidade de Eventos' },
+          title: { text: "Quantidade de Eventos" },
         },
         title: {
-          text: 'Linha do Tempo de Eventos',
-          align: 'center',
+          text: "Linha do Tempo de Eventos",
+          align: "center",
         },
         legend: { show: true },
       };
@@ -88,10 +86,6 @@ const EventTimelineChartComponent = ({ filterEventType = null }) => {
       return () => chart.destroy();
     }
   }, [data, labels, loading]);
-
-  useEffect(() => {
-    fetchData();
-  }, [filterEventType]);
 
   return (
     <Box
@@ -108,11 +102,7 @@ const EventTimelineChartComponent = ({ filterEventType = null }) => {
       alignItems="center"
       margin="auto"
     >
-      {loading ? (
-        <Spinner size="xl" />
-      ) : (
-        <div ref={chartRef} style={{ width: '100%', height: '100%' }} />
-      )}
+      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
     </Box>
   );
 };

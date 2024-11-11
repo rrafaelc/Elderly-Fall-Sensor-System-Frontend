@@ -1,65 +1,69 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ApexCharts from 'apexcharts';
-import { Box, Spinner } from '@chakra-ui/react';
-import axios from 'axios';
+import { useEffect, useRef, useState } from "react";
+import ApexCharts from "apexcharts";
+import { Box } from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import { EventType, SensorData } from "pages/Dashboard";
 
-
-interface SensorData {
-  id: number;
-  event_type: string;
+interface Props {
+  sensorData: SensorData[];
+  loading: boolean;
 }
 
-const EventChartComponent = () => {
-  const host = import.meta.env.VITE_API_HOST;
+const EventChartComponent = ({ sensorData, loading }: Props) => {
   const [data, setData] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const chartRef = useRef<HTMLDivElement>(null);
 
+  const formatEventType = (eventType: EventType) => {
+    switch (eventType) {
+      case "queda":
+        return "Queda";
+      case "emergencia":
+        return "Emergência";
+      default:
+        return eventType;
+    }
+  };
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-
-    const fetchData = async () => {
-      setLoading(true);
+    if (sensorData.length) {
       try {
-        const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
-
-        const eventCounts: { [key: string]: number } = {};
-        response.data.forEach(sqlsensor => {
-          eventCounts[sqlsensor.event_type] = (eventCounts[sqlsensor.event_type] || 0) + 1;
+        const eventCounts: Record<EventType, number> = {
+          queda: 0,
+          emergencia: 0,
+        };
+        sensorData.forEach((sqlsensor) => {
+          eventCounts[sqlsensor.event_type] =
+            (eventCounts[sqlsensor.event_type] || 0) + 1;
         });
 
-        const chartLabels = Object.keys(eventCounts);
+        const chartLabels = Object.keys(eventCounts).map((eventType) =>
+          formatEventType(eventType as EventType)
+        );
+
         const chartData = Object.values(eventCounts);
 
         setLabels(chartLabels);
         setData(chartData);
-        setLoading(false);
-      } catch (error) {
-        console.error('Erro ao buscar os dados:', error);
-        setLoading(false);
+      } catch {
+        toast.error("Erro ao contar as quedas");
       }
-    };
-
-    fetchData();
-  }, []);
+    }
+  }, [sensorData, loading]);
 
   useEffect(() => {
     if (!loading) {
       const options = {
         chart: {
-          type: 'donut',
-          width: '100%',
-          height: '100%',
+          type: "donut",
+          width: "100%",
+          height: "100%",
         },
         series: data,
         labels: labels,
         title: {
-          text: 'Quantidade de Eventos',
-          align: 'left',
+          text: "Quantidade de Eventos",
+          align: "left",
         },
         responsive: [
           {
@@ -69,7 +73,7 @@ const EventChartComponent = () => {
                 width: 300,
               },
               legend: {
-                position: 'bottom',
+                position: "bottom",
               },
             },
           },
@@ -100,11 +104,7 @@ const EventChartComponent = () => {
       alignItems="center"
       margin="auto"
     >
-      {loading ? (
-        <Spinner size="xl" />
-      ) : (
-        <div ref={chartRef} style={{ width: '100%', height: '100%' }} />
-      )}
+      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
     </Box>
   );
 };

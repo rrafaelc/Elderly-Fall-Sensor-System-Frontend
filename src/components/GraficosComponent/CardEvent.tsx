@@ -1,77 +1,73 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Spinner, Text, Flex } from '@chakra-ui/react';
-import axios from 'axios';
-
-interface SensorData {
-  id: number;
-  event_type: string;
+import { useEffect, useState } from "react";
+import { Box, Text, Flex } from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import { EventType, SensorData } from "pages/Dashboard";
+interface Props {
+  sensorData: SensorData[];
+  loading: boolean;
 }
 
-const EventCardsComponent = () => {
-  const host = import.meta.env.VITE_API_HOST;
-  const [eventCounts, setEventCounts] = useState<{ [key: string]: number }>({});
-  const [loading, setLoading] = useState<boolean>(true);
+const EventCardsComponent = ({ sensorData, loading }: Props) => {
+  const [eventCounts, setEventCounts] = useState<Record<EventType, number>>({
+    queda: 0,
+    emergencia: 0,
+  });
+
+  const formatEventType = (eventType: EventType) => {
+    switch (eventType) {
+      case "queda":
+        return "Queda";
+      case "emergencia":
+        return "Emergência";
+      default:
+        return eventType;
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-
-    const fetchData = async () => {
-      setLoading(true);
+    if (sensorData.length) {
       try {
-        const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
-
-        const counts: { [key: string]: number } = {};
-        response.data.forEach(sqlsensor => {
-          counts[sqlsensor.event_type] = (counts[sqlsensor.event_type] || 0) + 1;
+        const counts: Record<EventType, number> = { queda: 0, emergencia: 0 };
+        sensorData.forEach((sqlsensor) => {
+          counts[sqlsensor.event_type] =
+            (counts[sqlsensor.event_type] || 0) + 1;
         });
 
         setEventCounts(counts);
-        setLoading(false);
-      } catch (error) {
-        console.error('Erro ao buscar os dados:', error);
-        setLoading(false);
+      } catch {
+        toast.error("Erro ao contar as quedas");
       }
-    };
+    }
+  }, [sensorData, loading]);
 
-    fetchData();
-  }, []);
   return (
     <Box padding="4">
-      {loading ? (
-        <Spinner size="xl" />
-      ) : (
-        <Flex
-          direction="row"
-          gap="4"
-          justify="center"
-
-        >
-          {Object.entries(eventCounts).map(([eventType, count]) => (
-            <Box
-              key={eventType}
-              bgGradient="linear(to-r, teal.400, blue.400)"
-              borderRadius="md"
-              width="150px"
-              height="100px"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              boxShadow="md"
-              ml={{base: "0", md: "1"}}
-            >
-              <Text fontSize="xl" color="white">{count}</Text>
-              <Text fontSize="md" color="white">{eventType}</Text>
-            </Box>
-          ))}
-        </Flex>
-      )}
+      <Flex direction="row" gap="4" justify="center">
+        {Object.entries(eventCounts).map(([eventType, count]) => (
+          <Box
+            key={eventType}
+            bgGradient="linear(to-r, teal.400, blue.400)"
+            borderRadius="md"
+            width="150px"
+            height="100px"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            boxShadow="md"
+            ml={{ base: "0", md: "1" }}
+          >
+            <Text fontSize="xl" color="white">
+              {count}
+            </Text>
+            <Text fontSize="md" color="white">
+              {formatEventType(eventType as EventType)}
+            </Text>
+          </Box>
+        ))}
+      </Flex>
     </Box>
   );
-
 };
 
 export default EventCardsComponent;
