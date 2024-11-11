@@ -1,60 +1,44 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ApexCharts from 'apexcharts';
-import { Box, Spinner } from '@chakra-ui/react';
-import axios from 'axios';
+import { useEffect, useRef, useState } from "react";
+import ApexCharts from "apexcharts";
+import { Box } from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import { SensorData } from "pages/Dashboard";
 
-interface SensorData {
-  is_fall: boolean;
-  is_impact: boolean;
+interface Props {
+  sensorData: SensorData[];
+  loading: boolean;
 }
 
-const ChartComponent = () => {
-  const host = import.meta.env.VITE_API_HOST;
+const ChartComponent = ({ sensorData, loading }: Props) => {
   const [fallCount, setFallCount] = useState<number>(0);
   const [impactCount, setImpactCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-
-    const fetchData = async () => {
-      setLoading(true);
+    if (sensorData.length) {
       try {
-        const response = await axios.get<SensorData[]>(`${host}/v1/sqlsensor`, config);
-
-        const fallEvents = response.data.filter(item => item.is_fall).length;
-        const impactEvents = response.data.filter(item => item.is_impact).length;
-
-        setFallCount(fallEvents);
-        setImpactCount(impactEvents);
-        setLoading(false); // Define como false após receber dados, mesmo que vazios
-      } catch (error) {
-        console.error('Erro ao buscar os dados:', error);
-        setLoading(true);
+        setFallCount(sensorData.filter((item) => item.is_fall).length);
+        setImpactCount(sensorData.filter((item) => item.is_impact).length);
+      } catch {
+        toast.error("Erro ao contar as quedas");
       }
-    };
-
-    fetchData();
-  }, []);
+    }
+  }, [sensorData, loading]);
 
   useEffect(() => {
     if (!loading) {
       const options = {
         chart: {
-          type: 'donut',
-          width: '100%',
-          height: '100%',
+          type: "donut",
+          width: "100%",
+          height: "100%",
         },
         series: [fallCount, impactCount],
-        labels: ['Quedas', 'Impactos'],
-        colors: ['#FF1654', '#247BA0'],
+        labels: ["Quedas", "Impactos"],
+        colors: ["#FF1654", "#247BA0"],
         title: {
-          text: 'Quantidade de Quedas e Impactos',
-          align: 'left',
+          text: "Quantidade de Quedas e Impactos",
+          align: "left",
         },
         responsive: [
           {
@@ -64,7 +48,7 @@ const ChartComponent = () => {
                 width: 300,
               },
               legend: {
-                position: 'bottom',
+                position: "bottom",
               },
             },
           },
@@ -95,11 +79,7 @@ const ChartComponent = () => {
       alignItems="center"
       margin="auto"
     >
-      {loading ? (
-        <Spinner size="xl" />
-      ) : (
-        <div ref={chartRef} style={{ width: '100%', height: '100%' }} />
-      )}
+      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
     </Box>
   );
 };
