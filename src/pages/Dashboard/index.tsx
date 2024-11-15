@@ -34,13 +34,15 @@ const DashboardPage = () => {
   const host = import.meta.env.VITE_API_HOST;
   const [sensorData, setSensorData] = useState<SensorData[]>([]);
   const [previousData, setPreviousData] = useState<SensorData[]>([]);
+  const [, setLastEvent] = useState<SensorData | null>(null);
+  const [inInterval, setInInterval] = useState(false);
 
   const token = localStorage.getItem("token");
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  const fetchData = async () => {
+  const fetchData = async (inInterval: boolean) => {
     try {
       const response = await axios.get<SensorData[]>(
         `${host}/v1/sqlsensor`,
@@ -50,6 +52,44 @@ const DashboardPage = () => {
       if (JSON.stringify(response.data) !== JSON.stringify(previousData)) {
         setSensorData(response.data);
         setPreviousData(response.data);
+
+        // Definir o último evento registrado
+        const latestEvent = response.data[response.data.length - 1];
+        setLastEvent(latestEvent);
+
+        if (inInterval) {
+          if (latestEvent.event_type === "emergencia") {
+            toast.error(
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src="/images/sos.gif"
+                  alt="Ambulância"
+                  style={{ width: "30px", marginRight: "10px" }}
+                />
+                <span>Emergência detectada!</span>
+              </div>,
+              {
+                autoClose: 5000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                hideProgressBar: false,
+                icon: false
+              }
+            );
+          } else if (latestEvent.event_type === "queda") {
+            toast.info(
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <span>Queda detectada</span>
+              </div>,
+              {
+                autoClose: 5000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                hideProgressBar: false,
+              }
+            );
+          }
+        }
       }
     } catch (error) {
       toast.error("Erro ao buscar os dados");
@@ -58,12 +98,18 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(inInterval);
 
-    const intervalId = setInterval(fetchData, 3000);
+    const intervalId = setInterval(() => {
+      setInInterval(true);
+      fetchData(true);
+    }, 2000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+    return () => {
+      clearInterval(intervalId);
+      setInInterval(false);
+    };
+  }, [previousData]);
 
   if (!sensorData.length) {
     return (
