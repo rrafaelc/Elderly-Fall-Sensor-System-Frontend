@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import ApexCharts from "apexcharts";
+import React, { useEffect, useState, useRef } from "react";
+import ReactApexChart from "react-apexcharts";
 import { Box } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { EventType, SensorData } from "pages/Dashboard";
@@ -9,10 +9,9 @@ interface Props {
 }
 
 const EventChartComponent = ({ sensorData }: Props) => {
-  const [data, setData] = useState<number[]>([]);
-  const [labels, setLabels] = useState<string[]>([]);
-  const chartRef = useRef<HTMLDivElement>(null);
-  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores para comparação.
+  const [chartData, setChartData] = useState<number[]>([]);
+  const [chartLabels, setChartLabels] = useState<string[]>([]);
+  const prevSensorData = useRef<SensorData[]>([]);
 
   const formatEventType = (eventType: EventType) => {
     switch (eventType) {
@@ -26,71 +25,35 @@ const EventChartComponent = ({ sensorData }: Props) => {
   };
 
   useEffect(() => {
-    // Verifica se os dados mudaram antes de atualizar o estado.
     if (
       JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
     ) {
-      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
+      prevSensorData.current = sensorData;
 
       try {
         const eventCounts: Record<EventType, number> = {
           queda: 0,
           emergencia: 0,
         };
+
         sensorData.forEach((sqlsensor) => {
           eventCounts[sqlsensor.event_type] =
             (eventCounts[sqlsensor.event_type] || 0) + 1;
         });
 
-        const chartLabels = Object.keys(eventCounts).map((eventType) =>
-        `${formatEventType(eventType as EventType)} (${eventCounts[eventType as EventType]})`
-      );
+        const labels = Object.keys(eventCounts).map((eventType) =>
+          `${formatEventType(eventType as EventType)} (${eventCounts[eventType as EventType]})`
+        );
 
-        const chartData = Object.values(eventCounts);
+        const data = Object.values(eventCounts);
 
-        setLabels(chartLabels);
-        setData(chartData);
+        setChartLabels(labels);
+        setChartData(data);
       } catch {
         toast.error("Erro ao processar os eventos.");
       }
     }
   }, [sensorData]);
-
-  useEffect(() => {
-    const options = {
-      chart: {
-        type: "donut",
-        width: "100%",
-        height: "100%",
-      },
-      series: data,
-      labels: labels,
-      title: {
-        text: "Quantidade de Eventos",
-        align: "left",
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 300,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-      ],
-    };
-
-    const chart = new ApexCharts(chartRef.current, options);
-    chart.render();
-
-    return () => {
-      chart.destroy();
-    };
-  }, [data, labels]); // Atualiza o gráfico somente quando `data` ou `labels` mudarem.
 
   return (
     <Box
@@ -107,7 +70,37 @@ const EventChartComponent = ({ sensorData }: Props) => {
       alignItems="center"
       margin="auto"
     >
-      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
+      <ReactApexChart
+        type="donut"
+        width="100%"
+        height="100%"
+        series={chartData}
+        options={{
+          chart: {
+            type: "donut",
+            width: "100%",
+            height: "100%",
+          },
+          labels: chartLabels,
+          title: {
+            text: "Quantidade de Eventos",
+            align: "left",
+          },
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 300,
+                },
+                legend: {
+                  position: "bottom",
+                },
+              },
+            },
+          ],
+        }}
+      />
     </Box>
   );
 };
