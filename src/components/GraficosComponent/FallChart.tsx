@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import ApexCharts from "apexcharts";
+import React, { useEffect, useState } from "react";
+import ReactApexChart from "react-apexcharts";
 import { Box } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { SensorData } from "pages/Dashboard";
@@ -12,7 +12,6 @@ const FallChart = ({ sensorData }: Props) => {
   const [fallCount, setFallCount] = useState<number>(0);
   const [impactCount, setImpactCount] = useState<number>(0);
   const [labels, setLabels] = useState<string[]>([]);
-  const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (sensorData.length) {
@@ -24,51 +23,13 @@ const FallChart = ({ sensorData }: Props) => {
         setImpactCount(impactCount);
         setLabels([
           `Quedas (${fallCount})`,
-          `Impactos (${impactCount})`
+          `Impactos (${impactCount})`,
         ]);
       } catch {
         toast.error("Erro ao contar as quedas");
       }
-
     }
   }, [sensorData]);
-
-  useEffect(() => {
-    const options = {
-      chart: {
-        type: "donut",
-        width: "100%",
-        height: "100%",
-      },
-      series: [fallCount, impactCount],
-      labels: labels,
-      colors: ["#FF1654", "#247BA0"],
-      title: {
-        text: "Quantidade de Quedas e Impactos",
-        align: "left",
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 300,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-      ],
-    };
-
-    const chart = new ApexCharts(chartRef.current, options);
-    chart.render();
-
-    return () => {
-      chart.destroy();
-    };
-  }, [fallCount, impactCount]); // Apenas atualiza o gráfico quando os contadores mudarem.
 
   return (
     <Box
@@ -85,7 +46,38 @@ const FallChart = ({ sensorData }: Props) => {
       alignItems="center"
       margin="auto"
     >
-      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
+      <ReactApexChart
+        type="donut"
+        width="100%"
+        height="100%"
+        series={[fallCount, impactCount]}
+        options={{
+          chart: {
+            type: "donut",
+            width: "100%",
+            height: "100%",
+          },
+          labels: labels,
+          colors: ["#FF1654", "#247BA0"],
+          title: {
+            text: "Quantidade de Quedas e Impactos",
+            align: "left",
+          },
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 300,
+                },
+                legend: {
+                  position: "bottom",
+                },
+              },
+            },
+          ],
+        }}
+      />
     </Box>
   );
 };
