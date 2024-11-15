@@ -33,7 +33,9 @@ const CardTimeline = ({ sensorData }: Props) => {
           const totalEvents = sensorData.length;
           const distinctMonths = Object.keys(eventsByMonth).length;
           setMonthlyAverage(
-            distinctMonths > 0 ? totalEvents / distinctMonths : 0
+            distinctMonths > 0
+              ? parseFloat((totalEvents / distinctMonths).toFixed(2))
+              : 0
           );
 
           // Identificação do evento mais recente
