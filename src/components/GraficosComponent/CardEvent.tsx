@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { EventType, SensorData } from "pages/Dashboard";
+
 interface Props {
   sensorData: SensorData[];
-  loading: boolean;
 }
 
-const EventCardsComponent = ({ sensorData, loading }: Props) => {
+const EventCardsComponent = ({ sensorData }: Props) => {
   const [eventCounts, setEventCounts] = useState<Record<EventType, number>>({
     queda: 0,
     emergencia: 0,
   });
+
+  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores.
 
   const formatEventType = (eventType: EventType) => {
     switch (eventType) {
@@ -25,20 +27,25 @@ const EventCardsComponent = ({ sensorData, loading }: Props) => {
   };
 
   useEffect(() => {
-    if (sensorData.length) {
+    // Verifica se `sensorData` mudou em relação aos dados anteriores.
+    if (
+      JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
+    ) {
+      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
+
       try {
         const counts: Record<EventType, number> = { queda: 0, emergencia: 0 };
-        sensorData.forEach((sqlsensor) => {
-          counts[sqlsensor.event_type] =
-            (counts[sqlsensor.event_type] || 0) + 1;
+        sensorData.forEach((sensor) => {
+          counts[sensor.event_type] =
+            (counts[sensor.event_type] || 0) + 1;
         });
 
         setEventCounts(counts);
       } catch {
-        toast.error("Erro ao contar as quedas");
+        toast.error("Erro ao contar os eventos.");
       }
     }
-  }, [sensorData, loading]);
+  }, [sensorData]);
 
   return (
     <Box padding="4">

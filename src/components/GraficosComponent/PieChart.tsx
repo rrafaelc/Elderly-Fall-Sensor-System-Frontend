@@ -6,16 +6,21 @@ import { SensorData } from "pages/Dashboard";
 
 interface Props {
   sensorData: SensorData[];
-  loading: boolean;
 }
 
-const ChartComponent = ({ sensorData, loading }: Props) => {
+const ChartComponent = ({ sensorData }: Props) => {
   const [fallCount, setFallCount] = useState<number>(0);
   const [impactCount, setImpactCount] = useState<number>(0);
   const chartRef = useRef<HTMLDivElement>(null);
+  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores para comparação.
 
   useEffect(() => {
-    if (sensorData.length) {
+    // Verifica se os dados mudaram antes de atualizar os contadores.
+    if (
+      JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
+    ) {
+      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
+
       try {
         setFallCount(sensorData.filter((item) => item.is_fall).length);
         setImpactCount(sensorData.filter((item) => item.is_impact).length);
@@ -23,46 +28,44 @@ const ChartComponent = ({ sensorData, loading }: Props) => {
         toast.error("Erro ao contar as quedas");
       }
     }
-  }, [sensorData, loading]);
+  }, [sensorData]);
 
   useEffect(() => {
-    if (!loading) {
-      const options = {
-        chart: {
-          type: "donut",
-          width: "100%",
-          height: "100%",
-        },
-        series: [fallCount, impactCount],
-        labels: ["Quedas", "Impactos"],
-        colors: ["#FF1654", "#247BA0"],
-        title: {
-          text: "Quantidade de Quedas e Impactos",
-          align: "left",
-        },
-        responsive: [
-          {
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 300,
-              },
-              legend: {
-                position: "bottom",
-              },
+    const options = {
+      chart: {
+        type: "donut",
+        width: "100%",
+        height: "100%",
+      },
+      series: [fallCount, impactCount],
+      labels: ["Quedas", "Impactos"],
+      colors: ["#FF1654", "#247BA0"],
+      title: {
+        text: "Quantidade de Quedas e Impactos",
+        align: "left",
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 300,
+            },
+            legend: {
+              position: "bottom",
             },
           },
-        ],
-      };
+        },
+      ],
+    };
 
-      const chart = new ApexCharts(chartRef.current, options);
-      chart.render();
+    const chart = new ApexCharts(chartRef.current, options);
+    chart.render();
 
-      return () => {
-        chart.destroy();
-      };
-    }
-  }, [fallCount, impactCount, loading]);
+    return () => {
+      chart.destroy();
+    };
+  }, [fallCount, impactCount]); // Apenas atualiza o gráfico quando os contadores mudarem.
 
   return (
     <Box

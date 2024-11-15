@@ -33,7 +33,7 @@ export interface SensorData {
 const DashboardPage = () => {
   const host = import.meta.env.VITE_API_HOST;
   const [sensorData, setSensorData] = useState<SensorData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [previousData, setPreviousData] = useState<SensorData[]>([]);
 
   const token = localStorage.getItem("token");
   const config = {
@@ -41,27 +41,26 @@ const DashboardPage = () => {
   };
 
   const fetchData = async () => {
-    setLoading(true);
-
     try {
       const response = await axios.get<SensorData[]>(
         `${host}/v1/sqlsensor`,
         config
       );
 
-      setSensorData(response.data);
+      if (JSON.stringify(response.data) !== JSON.stringify(previousData)) {
+        setSensorData(response.data);
+        setPreviousData(response.data);
+      }
     } catch (error) {
       toast.error("Erro ao buscar os dados");
       console.error("Erro ao buscar os dados:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
 
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(fetchData, 3000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -83,21 +82,18 @@ const DashboardPage = () => {
     <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} mb={8}>
         <Box>
-          <CardFall sensorData={sensorData} loading={loading} />
-          <ChartComponent sensorData={sensorData} loading={loading} />
+          <CardFall sensorData={sensorData} />
+          <ChartComponent sensorData={sensorData} />
         </Box>
 
         <Box>
-          <CardEvent sensorData={sensorData} loading={loading} />
-          <EventChartComponent sensorData={sensorData} loading={loading} />
+          <CardEvent sensorData={sensorData} />
+          <EventChartComponent sensorData={sensorData} />
         </Box>
 
         <Box>
-          <CardTimeline sensorData={sensorData} loading={loading} />
-          <EventTimelineChartComponent
-            sensorData={sensorData}
-            loading={loading}
-          />
+          <CardTimeline sensorData={sensorData} />
+          <EventTimelineChartComponent sensorData={sensorData} />
         </Box>
       </SimpleGrid>
 
