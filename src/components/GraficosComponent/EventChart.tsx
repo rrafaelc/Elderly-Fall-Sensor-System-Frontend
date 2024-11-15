@@ -3,6 +3,7 @@ import ReactApexChart from "react-apexcharts";
 import { Box } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { EventType, SensorData } from "pages/Dashboard";
+import { he } from "date-fns/locale";
 
 interface Props {
   sensorData: SensorData[];
@@ -72,14 +73,12 @@ const EventChartComponent = ({ sensorData }: Props) => {
     >
       <ReactApexChart
         type="donut"
-        width="100%"
+        width={400}
         height="100%"
         series={chartData}
         options={{
           chart: {
             type: "donut",
-            width: "100%",
-            height: "100%",
           },
           labels: chartLabels,
           title: {

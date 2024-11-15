@@ -48,7 +48,7 @@ const FallChart = ({ sensorData }: Props) => {
     >
       <ReactApexChart
         type="donut"
-        width="100%"
+        width={400}
         height="100%"
         series={[fallCount, impactCount]}
         options={{
