@@ -3,24 +3,28 @@ import ApexCharts from "apexcharts";
 import { Box } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { SensorData } from "pages/Dashboard";
+
 interface Props {
   sensorData: SensorData[];
-  loading: boolean;
   filterEventType?: null;
 }
 
 const EventTimelineChartComponent = ({
   sensorData,
-  loading,
   filterEventType = null,
 }: Props) => {
   const [data, setData] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
-
-  const chartRef = useRef(null);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores.
 
   useEffect(() => {
-    if (sensorData.length) {
+    // Verifica se houve mudanças no `sensorData`.
+    if (
+      JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
+    ) {
+      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
+
       try {
         const eventsByMonth = sensorData.reduce(
           (acc: { [key: string]: number }, event: SensorData) => {
@@ -41,13 +45,13 @@ const EventTimelineChartComponent = ({
         setLabels(chartLabels);
         setData(chartData);
       } catch {
-        toast.error("Erro ao contar as quedas");
+        toast.error("Erro ao processar os eventos.");
       }
     }
-  }, [sensorData, loading]);
+  }, [sensorData, filterEventType]);
 
   useEffect(() => {
-    if (!loading && chartRef.current) {
+    if (chartRef.current) {
       const chartOptions = {
         chart: {
           type: "bar",
@@ -83,9 +87,12 @@ const EventTimelineChartComponent = ({
 
       const chart = new ApexCharts(chartRef.current, chartOptions);
       chart.render();
-      return () => chart.destroy();
+
+      return () => {
+        chart.destroy();
+      };
     }
-  }, [data, labels, loading]);
+  }, [data, labels]); // Atualiza o gráfico somente quando `data` ou `labels` mudarem.
 
   return (
     <Box

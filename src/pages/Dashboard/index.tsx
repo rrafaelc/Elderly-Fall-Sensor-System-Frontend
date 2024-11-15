@@ -33,38 +33,83 @@ export interface SensorData {
 const DashboardPage = () => {
   const host = import.meta.env.VITE_API_HOST;
   const [sensorData, setSensorData] = useState<SensorData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [previousData, setPreviousData] = useState<SensorData[]>([]);
+  const [, setLastEvent] = useState<SensorData | null>(null);
+  const [inInterval, setInInterval] = useState(false);
 
   const token = localStorage.getItem("token");
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  const fetchData = async () => {
-    setLoading(true);
-
+  const fetchData = async (inInterval: boolean) => {
     try {
       const response = await axios.get<SensorData[]>(
         `${host}/v1/sqlsensor`,
         config
       );
 
-      setSensorData(response.data);
+      if (JSON.stringify(response.data) !== JSON.stringify(previousData)) {
+        setSensorData(response.data);
+        setPreviousData(response.data);
+
+        // Definir o último evento registrado
+        const latestEvent = response.data[response.data.length - 1];
+        setLastEvent(latestEvent);
+
+        if (inInterval) {
+          if (latestEvent.event_type === "emergencia") {
+            toast.error(
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src="/images/sos.gif"
+                  alt="Ambulância"
+                  style={{ width: "30px", marginRight: "10px" }}
+                />
+                <span>Emergência detectada!</span>
+              </div>,
+              {
+                autoClose: 5000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                hideProgressBar: false,
+                icon: false
+              }
+            );
+          } else if (latestEvent.event_type === "queda") {
+            toast.info(
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <span>Queda detectada</span>
+              </div>,
+              {
+                autoClose: 5000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                hideProgressBar: false,
+              }
+            );
+          }
+        }
+      }
     } catch (error) {
       toast.error("Erro ao buscar os dados");
       console.error("Erro ao buscar os dados:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(inInterval);
 
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(() => {
+      setInInterval(true);
+      fetchData(true);
+    }, 2000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+    return () => {
+      clearInterval(intervalId);
+      setInInterval(false);
+    };
+  }, [previousData]);
 
   if (!sensorData.length) {
     return (
@@ -83,21 +128,18 @@ const DashboardPage = () => {
     <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} mb={8}>
         <Box>
-          <CardFall sensorData={sensorData} loading={loading} />
-          <ChartComponent sensorData={sensorData} loading={loading} />
+          <CardFall sensorData={sensorData} />
+          <ChartComponent sensorData={sensorData} />
         </Box>
 
         <Box>
-          <CardEvent sensorData={sensorData} loading={loading} />
-          <EventChartComponent sensorData={sensorData} loading={loading} />
+          <CardEvent sensorData={sensorData} />
+          <EventChartComponent sensorData={sensorData} />
         </Box>
 
         <Box>
-          <CardTimeline sensorData={sensorData} loading={loading} />
-          <EventTimelineChartComponent
-            sensorData={sensorData}
-            loading={loading}
-          />
+          <CardTimeline sensorData={sensorData} />
+          <EventTimelineChartComponent sensorData={sensorData} />
         </Box>
       </SimpleGrid>
 

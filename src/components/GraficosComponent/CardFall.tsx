@@ -1,25 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Text } from "@chakra-ui/react";
 import { SensorData } from "pages/Dashboard";
-import { toast } from "react-toastify";interface Props {
+import { toast } from "react-toastify";
+
+interface Props {
   sensorData: SensorData[];
-  loading: boolean;
 }
 
-const CardComponent = ({ sensorData, loading }: Props) => {
+const CardComponent = ({ sensorData }: Props) => {
   const [fallCount, setFallCount] = useState<number>(0);
   const [sosCount, setSosCount] = useState<number>(0);
+  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores.
 
   useEffect(() => {
-    if (sensorData.length) {
+    // Verifica se houve mudanças no `sensorData`.
+    if (
+      JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
+    ) {
+      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
+
       try {
-        setFallCount(sensorData.filter((item) => item.is_fall).length);
-        setSosCount(sensorData.filter((item) => item.is_impact).length);
+        const falls = sensorData.filter((item) => item.is_fall).length;
+        const impacts = sensorData.filter((item) => item.is_impact).length;
+
+        setFallCount(falls);
+        setSosCount(impacts);
       } catch {
-        toast.error("Erro ao contar as quedas");
+        toast.error("Erro ao contar os eventos.");
       }
     }
-  }, [sensorData, loading]);
+  }, [sensorData]);
 
   return (
     <Box display="flex" justifyContent="space-around" width="100%" padding="4">

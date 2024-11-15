@@ -6,13 +6,13 @@ import { EventType, SensorData } from "pages/Dashboard";
 
 interface Props {
   sensorData: SensorData[];
-  loading: boolean;
 }
 
-const EventChartComponent = ({ sensorData, loading }: Props) => {
+const EventChartComponent = ({ sensorData }: Props) => {
   const [data, setData] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
+  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores para comparação.
 
   const formatEventType = (eventType: EventType) => {
     switch (eventType) {
@@ -26,7 +26,12 @@ const EventChartComponent = ({ sensorData, loading }: Props) => {
   };
 
   useEffect(() => {
-    if (sensorData.length) {
+    // Verifica se os dados mudaram antes de atualizar o estado.
+    if (
+      JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
+    ) {
+      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
+
       try {
         const eventCounts: Record<EventType, number> = {
           queda: 0,
@@ -46,48 +51,46 @@ const EventChartComponent = ({ sensorData, loading }: Props) => {
         setLabels(chartLabels);
         setData(chartData);
       } catch {
-        toast.error("Erro ao contar as quedas");
+        toast.error("Erro ao processar os eventos.");
       }
     }
-  }, [sensorData, loading]);
+  }, [sensorData]);
 
   useEffect(() => {
-    if (!loading) {
-      const options = {
-        chart: {
-          type: "donut",
-          width: "100%",
-          height: "100%",
-        },
-        series: data,
-        labels: labels,
-        title: {
-          text: "Quantidade de Eventos",
-          align: "left",
-        },
-        responsive: [
-          {
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 300,
-              },
-              legend: {
-                position: "bottom",
-              },
+    const options = {
+      chart: {
+        type: "donut",
+        width: "100%",
+        height: "100%",
+      },
+      series: data,
+      labels: labels,
+      title: {
+        text: "Quantidade de Eventos",
+        align: "left",
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 300,
+            },
+            legend: {
+              position: "bottom",
             },
           },
-        ],
-      };
+        },
+      ],
+    };
 
-      const chart = new ApexCharts(chartRef.current, options);
-      chart.render();
+    const chart = new ApexCharts(chartRef.current, options);
+    chart.render();
 
-      return () => {
-        chart.destroy();
-      };
-    }
-  }, [data, labels, loading]);
+    return () => {
+      chart.destroy();
+    };
+  }, [data, labels]); // Atualiza o gráfico somente quando `data` ou `labels` mudarem.
 
   return (
     <Box
