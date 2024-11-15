@@ -19,7 +19,7 @@ const EventChartComponent = ({ sensorData, loading }: Props) => {
       case "queda":
         return "Queda";
       case "emergencia":
-        return "Emergência";
+        return "Botão SOS";
       default:
         return eventType;
     }
@@ -38,13 +38,13 @@ const EventChartComponent = ({ sensorData, loading }: Props) => {
         });
 
         const chartLabels = Object.keys(eventCounts).map((eventType) =>
-          formatEventType(eventType as EventType)
-        );
+        `${formatEventType(eventType as EventType)} (${eventCounts[eventType as EventType]})`
+      );
 
         const chartData = Object.values(eventCounts);
 
         setLabels(chartLabels);
-        setData(chartData);
+        setData(Object.values(eventCounts));
       } catch {
         toast.error("Erro ao contar as quedas");
       }

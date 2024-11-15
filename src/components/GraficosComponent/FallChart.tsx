@@ -13,15 +13,24 @@ const ChartComponent = ({ sensorData, loading }: Props) => {
   const [fallCount, setFallCount] = useState<number>(0);
   const [impactCount, setImpactCount] = useState<number>(0);
   const chartRef = useRef<HTMLDivElement>(null);
+  const [labels, setLabels] = useState<string[]>([]);
 
   useEffect(() => {
     if (sensorData.length) {
       try {
-        setFallCount(sensorData.filter((item) => item.is_fall).length);
-        setImpactCount(sensorData.filter((item) => item.is_impact).length);
+        const fallCount = sensorData.filter((item) => item.is_fall).length;
+        const impactCount = sensorData.filter((item) => item.is_impact).length;
+
+        setFallCount(fallCount);
+        setImpactCount(impactCount);
+        setLabels([
+          `Quedas (${fallCount})`,
+          `Impactos (${impactCount})`
+        ]);
       } catch {
         toast.error("Erro ao contar as quedas");
       }
+
     }
   }, [sensorData, loading]);
 
@@ -34,7 +43,7 @@ const ChartComponent = ({ sensorData, loading }: Props) => {
           height: "100%",
         },
         series: [fallCount, impactCount],
-        labels: ["Quedas", "Impactos"],
+        labels: labels,
         colors: ["#FF1654", "#247BA0"],
         title: {
           text: "Quantidade de Quedas e Impactos",
