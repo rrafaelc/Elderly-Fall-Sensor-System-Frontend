@@ -19,7 +19,7 @@ const EventChartComponent = ({ sensorData }: Props) => {
       case "queda":
         return "Queda";
       case "emergencia":
-        return "Emergência";
+        return "Botão SOS";
       default:
         return eventType;
     }
@@ -43,8 +43,8 @@ const EventChartComponent = ({ sensorData }: Props) => {
         });
 
         const chartLabels = Object.keys(eventCounts).map((eventType) =>
-          formatEventType(eventType as EventType)
-        );
+        `${formatEventType(eventType as EventType)} (${eventCounts[eventType as EventType]})`
+      );
 
         const chartData = Object.values(eventCounts);
 

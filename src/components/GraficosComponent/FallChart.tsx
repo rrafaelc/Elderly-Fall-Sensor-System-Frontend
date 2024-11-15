@@ -8,25 +8,28 @@ interface Props {
   sensorData: SensorData[];
 }
 
-const ChartComponent = ({ sensorData }: Props) => {
+const FallChart = ({ sensorData }: Props) => {
   const [fallCount, setFallCount] = useState<number>(0);
   const [impactCount, setImpactCount] = useState<number>(0);
+  const [labels, setLabels] = useState<string[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
-  const prevSensorData = useRef<SensorData[]>([]); // Armazena os dados anteriores para comparação.
 
   useEffect(() => {
-    // Verifica se os dados mudaram antes de atualizar os contadores.
-    if (
-      JSON.stringify(sensorData) !== JSON.stringify(prevSensorData.current)
-    ) {
-      prevSensorData.current = sensorData; // Atualiza os dados anteriores.
-
+    if (sensorData.length) {
       try {
-        setFallCount(sensorData.filter((item) => item.is_fall).length);
-        setImpactCount(sensorData.filter((item) => item.is_impact).length);
+        const fallCount = sensorData.filter((item) => item.is_fall).length;
+        const impactCount = sensorData.filter((item) => item.is_impact).length;
+
+        setFallCount(fallCount);
+        setImpactCount(impactCount);
+        setLabels([
+          `Quedas (${fallCount})`,
+          `Impactos (${impactCount})`
+        ]);
       } catch {
         toast.error("Erro ao contar as quedas");
       }
+
     }
   }, [sensorData]);
 
@@ -38,7 +41,7 @@ const ChartComponent = ({ sensorData }: Props) => {
         height: "100%",
       },
       series: [fallCount, impactCount],
-      labels: ["Quedas", "Impactos"],
+      labels: labels,
       colors: ["#FF1654", "#247BA0"],
       title: {
         text: "Quantidade de Quedas e Impactos",
@@ -87,4 +90,4 @@ const ChartComponent = ({ sensorData }: Props) => {
   );
 };
 
-export default ChartComponent;
+export default FallChart;

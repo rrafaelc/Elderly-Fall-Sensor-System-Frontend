@@ -60,15 +60,15 @@ const CardTimeline = ({ sensorData }: Props) => {
         <Box
           bgGradient="linear(to-r, teal.400, blue.400)"
           borderRadius="md"
-          width="150px"
-          height="100px"
+          width="300px"
+          height="150px"
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
           boxShadow="md"
         >
-          <Text fontSize="2xl" color="white">
+          <Text fontSize="5xl" color="white" fontWeight="bold" textShadow="0 0 5px rgba(0, 0, 0, 0.5)">
             {monthlyAverage}
           </Text>
           <Text fontSize="md" color="white">
@@ -81,8 +81,8 @@ const CardTimeline = ({ sensorData }: Props) => {
         <Box
           bgGradient="linear(to-r, orange.400, red.400)"
           borderRadius="md"
-          width="150px"
-          height="100px"
+          width="300px"
+          height="150px"
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -91,10 +91,11 @@ const CardTimeline = ({ sensorData }: Props) => {
         >
           {lastEvent ? (
             <>
-              <Text fontSize="2xl" color="white">
+              <Text fontSize="1xl" color="white">Ùltimo registro:</Text>
+              <Text p="2" fontSize="3xl" color="white" fontWeight="bold" textShadow="0 0 5px rgba(0, 0, 0, 0.5)">
                 {lastEvent.event_type === "queda" ? "Queda" : "Emergência"}
               </Text>
-              <Text fontSize="sm" color="white">
+              <Text ml={{base:"15px"}} fontSize="sm" color="white">
                 <FaClock style={{ display: "inline", marginRight: "4px" }} />
                 {new Date(lastEvent.updated_at).toLocaleString("pt-BR", {
                   dateStyle: "short",
