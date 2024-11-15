@@ -1,14 +1,12 @@
 import { Page } from "shared/Layout";
 import { ErrorPageStrategy } from "shared/Result";
-import { SimpleGrid, Box, Text } from "@chakra-ui/react";
-import ChartComponent from "../../components/GraficosComponent/PieChart";
+import { Flex, Box, Text } from "@chakra-ui/react";
+import ChartComponent from "components/GraficosComponent/FallChart";
 import EventChartComponent from "components/GraficosComponent/EventChart";
-import CardEvent from "components/GraficosComponent/CardEvent";
-import CardFall from "components/GraficosComponent/CardFall";
 import EventTimelineChartComponent from "components/GraficosComponent/EventTimelineChartComponent";
 import SensorDataTable from "components/GraficosComponent/Sensor_dataTable";
 import CardTimeline from "components/GraficosComponent/CardTimeline";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { CheckCircleIcon } from "@chakra-ui/icons";
@@ -42,6 +40,14 @@ const DashboardPage = () => {
     headers: { Authorization: `Bearer ${token}` },
   };
 
+  const sosAudioRef = useRef<HTMLAudioElement | null>(null);
+  const notificationAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    sosAudioRef.current = new Audio("/audio/sos.mp3");
+    notificationAudioRef.current = new Audio("/audio/notification.mp3");
+  }, []);
+
   const fetchData = async (inInterval: boolean) => {
     try {
       const response = await axios.get<SensorData[]>(
@@ -59,11 +65,13 @@ const DashboardPage = () => {
 
         if (inInterval) {
           if (latestEvent.event_type === "emergencia") {
+            sosAudioRef.current?.play();
+
             toast.error(
               <div style={{ display: "flex", alignItems: "center" }}>
                 <img
                   src="/images/sos.gif"
-                  alt="Ambulância"
+                  alt="SoS"
                   style={{ width: "30px", marginRight: "10px" }}
                 />
                 <span>Emergência detectada!</span>
@@ -77,6 +85,8 @@ const DashboardPage = () => {
               }
             );
           } else if (latestEvent.event_type === "queda") {
+            notificationAudioRef.current?.play();
+
             toast.info(
               <div style={{ display: "flex", alignItems: "center" }}>
                 <span>Queda detectada</span>
@@ -126,26 +136,22 @@ const DashboardPage = () => {
 
   return (
     <Page maxW="container.xl" spacing={{ base: 8, lg: 20 }}>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} mb={8}>
-        <Box>
-          <CardFall sensorData={sensorData} />
-          <ChartComponent sensorData={sensorData} />
-        </Box>
+      <Box p={4}> <CardTimeline sensorData={sensorData}  /> </Box>
 
-        <Box>
-          <CardEvent sensorData={sensorData} />
-          <EventChartComponent sensorData={sensorData} />
-        </Box>
+      <Flex flexDirection={{ base: 'column', md: 'row' }} justify="space-between" align="center">
 
-        <Box>
-          <CardTimeline sensorData={sensorData} />
-          <EventTimelineChartComponent sensorData={sensorData} />
-        </Box>
-      </SimpleGrid>
+        <Box p={4} ><EventTimelineChartComponent sensorData={sensorData} /> </Box>
+
+        <Box p={4} > <ChartComponent sensorData={sensorData} /> </Box>
+
+        <Box p={4} > <EventChartComponent sensorData={sensorData}  /> </Box>
+
+        </Flex>
 
       <Box mt="20" width="100%" display="flex" justifyContent="center">
         <SensorDataTable sensorData={sensorData} />
       </Box>
+
     </Page>
   );
 };
